@@ -1,0 +1,107 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+var date1;
+$(function() {
+	layui.use(['layer', 'laydate', 'table', 'form'], function() {
+		layer = layui.layer,
+			laydate = layui.laydate,
+			table = layui.table,
+			form = layui.form;
+
+		laydate.render({
+			elem: '#leave_time',
+		});
+		//赋当日日期
+		$("#leave_time").val(dateFormat('YYYY-mm-dd', new Date()));
+		
+		initTable();
+
+
+	})
+
+//监听搜索
+	$("#search").click(function() {
+		reloadTable()
+	});
+
+})
+//初始化表格
+function initTable() {
+	var json=getValue();
+	table.render({
+		elem: '#table',
+		url: WebAPI.instructor + 'leave/leaveList?leave_time=' + json.leave_time + '&leave_status=' + json.leave_status + 
+		  '&sno=' +json.sno,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[{
+					field: 'leave_id',
+					title: 'ID',
+					hide: true
+				},
+				{
+					field: 'leave_time',
+					title: '申请时间',
+					unresize: true,
+					align: 'center'
+				},
+				{
+					field: 'start_time',
+					title: '请假时间',
+					unresize: true,
+					align: 'center',
+					templet:function(d){
+						if(d.start_time!=null && d.end_time!=null){
+							d.leave_time=d.start_time+' 至 '+d.end_time;
+						}
+						return d.leave_time;
+					}
+				},
+				{
+					field: 'leave_status',
+					title: '审核状态',
+					unresize: true,
+					align: 'center'
+				},
+				{
+					fixed: 'right',
+					title: '操作',
+					toolbar: '#oper-col',
+					width: 100,
+					align: 'center'
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	var json=getValue();
+	table.reload('tableReload', {
+		url: WebAPI.instructor + 'leave/leaveList?leave_time=' + json.leave_time + '&leave_status=' + json.leave_status +
+		  '&sno=' +json.sno,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'detail') {
+
+		}
+	})
+}
+//获取文本框的值
+function getValue() {
+	var json = {};
+	json.sno = '10210416301'
+	json.leave_time = $("input[name='leave_time']").val();
+	json.leave_status = $("select[name='leave_status']").val();
+	return json;
+}

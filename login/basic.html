@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Basic Accordion - jQuery EasyUI Demo</title>
+		<link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../lib/layui/css/layui.css" media="all"/>
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/index.css">
+		<link rel="stylesheet" href="css/skins/_all-skins.css">
+		<script type="text/javascript" src="../lib/jquery/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js"></script>
+		<style>
+			/* 修改bootstrap的样式 */
+			.sidebar-menu li.header {
+				font-size: 16px;
+			}
+
+			/* 自定义的样式 */
+			body {
+				padding: 0;
+				overflow: hidden;
+			}
+
+			#top {
+				height: 60px;
+				width: 100%;
+				background: #0856FF;
+			}
+			#top .top-info{
+				height: 100%;
+			}
+			#top .top-info2{
+				height: 100%;
+			}
+			#top .p-title{
+				margin-left: 10px;
+				font-size: 30px;
+				color: #ffffff;
+				font-weight: bold;
+				line-height: 60px;
+			}
+			#top .user-info{
+				float: right;;
+				font-size: 14px;
+				line-height: 60px;
+				margin-right: 20px;
+			}
+			#top .user-info a{
+				color: #ffffff;
+			}
+			#top .user-info a i{
+				font-size: 6px;
+			}
+			#top .user-info .user-info-edit{
+				background: #9F79EE;
+				line-height: 25px;
+				position: absolute;
+				z-index: 99999;
+				top:45px;
+				right: 15px;
+				width: 80px;
+				color: #ffffff;
+				text-align: center;
+				display: none;
+			}
+			#top .user-info .user-info-edit li:hover{
+				background:#32CD32
+			}
+			.left {
+				background: #009ACD;
+				height: calc(100vh - 60px);
+			}
+
+			.left li {
+				font-size: 16px;
+				color: #ffffff;
+			}
+
+			.left li span {
+				font-size: 16px;
+				color: #ffffff;
+			}
+
+			.left li a {
+				color: #ffffff;
+			}
+
+			.left li a m {
+				font-size: 14px;
+			}
+			
+			.left li.treeview ul li:hover{
+				background:#32CD32
+			}
+			iframe{
+				width: 100%;
+				height: calc(100vh - 60px);
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 顶部 -->
+			<div class="layui-row">
+				<div id="top" class="layui-col-md12">
+					<div class="layui-row top-info">
+						<!-- 标题 -->
+						<div class="layui-col-md6 top-info2">
+							<p class="p-title">大学生校外实习实训管理系统</p>
+						</div>
+						<!-- 用户信息展示 -->
+						<div class="layui-col-md6  top-info2">
+							<div class="user-info">
+								<ul>
+									<li>
+										<a href="javascript:void(0)">钟玉石
+											<i class="layui-icon layui-icon-down"></i>
+										</a>
+									</li>
+								</ul>
+								<div class="user-info-edit">
+									<ul>
+										<li>
+											<a href="javascript:void(0)" onclick="updatePassword()">修改密码</a>
+										</li>
+										<li>
+											<a href="javascript:void(0)" onclick="lookUserInfo()">个人信息</a>
+										</li>
+										<li>
+											<a href="javascript:void(0)" onclick="exit()">退出登录</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-row">
+				<!-- 左侧导航栏 -->
+				<div class="layui-col-md2">
+					<div class="left sidebar">
+						<ul class="sidebar-menu" id="sidebar-menu">
+							<li class="header header1">导航菜单</li>
+							<li class="treeview active">
+								<a href="#" class="a0">
+									<i class="fa fa-desktop"></i>
+									<span>信息管理</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1 menu-open" style="display: block;">
+									<li>
+										<a class="menuItem" href="javascript:void(0);" data-url="test1.html">
+											<i class="fa fa-sitemap"></i>
+											<m>新闻中心</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)">
+											<i class="fa fa-sitemap"></i>
+											<m>新闻中心</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li class="treeview">
+								<a href="#">
+									<i class="fa fa-desktop"></i>
+									<span>系统管理</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1" style="display: none;">
+									<li>
+										<a class="menuItem" href="javascript:void(0)"  data-url="test2.html">
+											<i class="fa fa-sitemap"></i>
+											<m>角色管理</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)"  data-url="test2.html">
+											<i class="fa fa-sitemap"></i>
+											<m>用户管理</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)">
+											<i class="fa fa-sitemap"></i>
+											<m>部门管理</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+
+							<li class="treeview">
+								<a href="#">
+									<i class="fa fa-desktop"></i>
+									<span>文本管理</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1" style="display: none;">
+									<li>
+										<a class="menuItem" href="javascript:void(0)">
+											<i class="fa fa-sitemap"></i>
+											<m>新闻管理</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)">
+											<i class="fa fa-sitemap"></i>
+											<m>新闻管理1</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<!-- 右侧iframe -->
+				<div class="layui-col-md10">
+					<iframe name="iframe" class="iframe" frameborder="0" src=""></iframe>
+				</div>
+			</div>
+		</div>
+		<script>
+			//下拉树的动态css设置
+			$("#sidebar-menu li a").click(function() {
+				var d = $(this),
+					e = d.next();
+				if (e.is(".treeview-menu") && e.is(":visible")) {
+					e.slideUp(500, function() {
+							e.removeClass("menu-open")
+						}),
+						e.parent("li").removeClass("active")
+				} else if (e.is(".treeview-menu") && !e.is(":visible")) {
+					var f = d.parents("ul").first(),
+						g = f.find("ul:visible").slideUp(500);
+					g.removeClass("menu-open");
+					var h = d.parent("li");
+					e.slideDown(500, function() {
+						e.addClass("menu-open"),
+							f.find("li.active").removeClass("active"),
+							h.addClass("active");
+
+						var _height1 = $(window).height() - $("#sidebar-menu >li.active").position().top - 41;
+						var _height2 = $("#sidebar-menu li > ul.menu-open").height() + 10
+						if (_height2 > _height1) {
+							$("#sidebar-menu >li > ul.menu-open").css({
+								overflow: "auto",
+								height: _height1
+							})
+						}
+					})
+				}
+				e.is(".treeview-menu");
+			});
+			
+			//鼠标移动到姓名位置显示用户的操作
+			$("#top .user-info").mouseover(function(){
+				$("#top .user-info .user-info-edit").css("display","block")
+			})
+			$("#top .user-info").mouseout(function(){
+				$("#top .user-info .user-info-edit").css("display","none")
+			})
+			
+			//动态iframe加载页面设置
+			$("li.treeview ul li").click(function(){
+				var src=$(this).find("a").attr("data-url");
+				$("iframe[name='iframe']").attr("src",src)
+			})
+		</script>
+	</body>
+</html>

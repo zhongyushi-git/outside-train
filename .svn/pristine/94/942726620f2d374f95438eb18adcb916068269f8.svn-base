@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>添加实训计划</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<style>
+			.layui-input{
+				height: 30px;
+			}
+			.right{
+				float: right;
+			}
+			body{
+				margin:10px
+			}
+			table{border-collapse:separate; border-spacing:0px 15px;}
+		</style>
+	</head>
+	<body>
+		<div>
+			<table>
+				<tr>
+					<td width="100px">
+						<div class="right">学期：</div></td>
+					<td>
+						<select class="layui-input" name="term_id" id="term_id"></select>
+					</td>
+				</tr>
+				<tr>
+					<td width="100px">
+						<div class="right">实训名称：</div></td>
+					<td>
+						<input class="layui-input" name="train_name" id="train_name">
+					</td>
+				</tr>
+				<tr>
+					<td width="100px">
+						<div class="right">实训开始时间：</div></td>
+					<td>
+						<input class="layui-input" name="start_time" id="start" autocomplete="off">
+					</td>
+				</tr>
+				<tr>
+					<td width="100px">
+						<div class="right">实训结束时间：</div></td>
+					<td>
+						<input class="layui-input" name="end_time" id="end" autocomplete="off">
+					</td>
+				</tr>
+				<tr>
+					<td width="100px">
+						<div class="right">备注：</div></td>
+					<td>
+						<input class="layui-input" name="remark">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: center;">
+						<button class="layui-btn layui-btn-normal layui-btn-sm" id="save">确定</button>
+						<button class="layui-btn layui-btn-primary layui-btn-sm" id="close">取消</button>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+	<script src="../../config.js"></script>
+	<script>
+		var layer,laydate,form;
+		$(function(){
+			layui.use(['layer','laydate','form'],function(){
+				layer=layui.layer,
+				laydate=layui.laydate,
+				form=layui.form;
+				
+				getTermList()
+				
+				laydate.render({
+					elem: '#start',
+					type: 'datetime',
+					trigger: 'click'
+				});
+				laydate.render({
+					elem: '#end',
+					type: 'datetime',
+					trigger: 'click'
+				});
+				
+				$("#save").click(function(){
+					saveTrainPlan();
+				})
+				$("#close").click(function(){
+					parent.layer.close(window.parent.index1);
+				})
+			});
+		})
+		//获取学期信息
+		function getTermList() {
+			$.ajax({
+				url: WebAPI.manage + 'term/getTermList',
+				async: false,
+				success: function(data) {
+					$("#term_id").html('');
+					var select = '';
+					for (var i = 0; i < data.length; i++) {
+						select += '<option value="' + data[i].term_id + '">' + data[i].term + '</option>';
+					}
+					$("#term_id").append(select);
+				},
+				error: function() {
+					layer.alert("查询学期信息发生错误");
+				}
+			})
+		}
+		//获取数据并验证
+		function getValue(){
+			var json={};
+			json.term_id=$("select[name='term_id']").val();
+			json.train_name=$("input[name='train_name']").val();
+			json.start_time=$("input[name='start_time']").val();
+			json.end_time=$("input[name='end_time']").val();
+			json.remark=$("input[name='remark']").val();
+			if(json.train_name==null||json.train_name.length==0){
+				layer.msg("实训名称为必填项");
+				return;
+			}else if(json.start_time==null||json.start_time.length==0){
+				layer.msg("实训开始时间为必填项");
+				return;
+			}else if(json.end_time==null||json.end_time.length==0){
+				layer.msg("实训结束时间为必填项");
+				return;
+			}else if(new Date(json.start_time.replace("-", "/").replace("-", "/")) > 
+					new Date(json.end_time.replace("-", "/").replace("-", "/"))){
+				layer.msg("实训开始时间必须在结束时间之前");
+				return;
+			}
+			return json;
+		}
+		//保存实训计划
+		function saveTrainPlan(){
+			var json=getValue();
+			if(!json)return;
+			$.ajax({
+				url:WebAPI.teacher+"trainPlan/saveTrainPlan",
+				type:'post',
+				data:JSON.stringify(json),
+				contentType: 'application/json',
+				success:function(data){
+					if(data.code==200){
+						layer.alert("添加成功",function(i){
+							//关闭父级弹框
+							 parent.layer.close(window.parent.index1);
+							 layer.close(i)
+							 window.parent.reloadTable()
+						});
+						
+					}else{
+						layer.alert(data.msg);
+					}
+				},error:function(err){
+					console.log("发生错误"+err)
+				}
+			})
+		}
+	</script>
+</html>

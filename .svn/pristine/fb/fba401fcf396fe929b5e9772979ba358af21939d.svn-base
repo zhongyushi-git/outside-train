@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>请假记录</title>
+		<link rel="stylesheet" href="../layui/css/layui.css" />
+		<script src="../jquery-3.2.1.min.js"></script>
+		<script src="../layui/layui.js"></script>
+		<!-- 操作列 -->
+		<script type="text/html" id="oper-col">
+			<a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="detail">详情</a>
+		</script>
+		<style>
+			body{
+				margin: 10px;
+			}
+			.layui-input{
+				height: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 搜索栏 -->
+			<div class="search">
+				<table>
+					<tr>
+						<td width="100px"></td>
+						<td>申请时间：</td>
+						<td>
+							<input type="text" class="layui-input" name="applyTime" id="applyTime">
+						</td>
+						<td width="50px"></td>
+						<td>审核状态：</td>
+						<td>
+							<div class="layui-form" lay-filter="jhbh">
+							<select name="leave_status">
+								<option value="全部">全部</option>
+								<option value="待审核">待审核</option>
+								<option value="已通过">已通过</option>
+								<option value="未通过">未通过</option>
+							</select>
+							</div>
+						</td>
+						<td width="20px"></td>
+						<td>
+							<button class="layui-btn layui-btn-sm layui-btn-normal" id="search">搜索</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!-- 表格栏 -->
+			<div>
+				<table id="table" lay-filter="table"></table>
+			</div>
+		</div>
+	</body>
+	<script src="leaveRecord.js"></script>
+</html>

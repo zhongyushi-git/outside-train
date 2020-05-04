@@ -1,0 +1,118 @@
+var layer,laydate,table,form;
+var date,attend_id;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function(){
+	layui.use(['layer','laydate','table','form'],function(){
+		layer=layui.layer,
+		laydate=layui.laydate,
+		table=layui.table,
+		form=layui.form;
+		
+		
+		laydate.render({
+			elem: '#date1',
+		});
+			
+		var WebAPI={};
+		WebAPI.engineer=""
+		var date1=$("input[name='date1']").val();
+		table.render({	
+			elem: '#table',
+			url: WebAPI.engineer + 'attend/queryByStu?date1='+date1 ,
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[{type:'radio'},
+					 { field: 'attend_id', title: 'ID', hide:true },
+					{
+						field: 'attend_date',
+						title: '学期',
+						unresize: true,
+						align:'center'
+					},
+					{
+						field: 'name',
+						title: '姓名',
+						unresize: true,
+						align:'center'
+					},
+					{
+						field: 'sno',
+						title: '学号',
+						unresize: true,
+						align:'center',
+					},
+					{
+						field: 'file_name',
+						title: '文件名',
+						unresize: true,
+						align:'center',
+					},{
+						fixed: 'right',
+						title: '操作',
+						toolbar: '#oper-col',
+						width: 120,
+						align:'center'
+					}
+				]
+			],
+		})
+		
+	})
+	
+	$("#search").click(function(){
+		reloadTable()
+	});
+	
+})
+
+//搜索时重载表格
+function reloadTable() {
+	//表格重载
+	table.reload('tableReload', {
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'download') {
+			layer.msg('下载啦')
+		}else if(layEvent === 'addReportSocre'){
+			layer.prompt({
+				value: '',
+				title: '请输入实训成绩',
+			}, function(value, index, elem) {
+				var re = /^\d+(?=\.{0,1}\d+$|$)/
+				if (!re.test(value)) {
+					layer.msg("请输入正确的数字");
+					return;
+				}
+				addReportSocre(data.sno, value, index)
+			});
+		}
+	})
+}
+//添加实训成绩
+function addReportSocre(sno, socre, index) {
+	var WebAPI = {}
+	WebAPI.student = ''
+	$.get(WebAPI.student + "socre/addReportSocre", {
+		report_socre: socre,
+		sno: sno
+	}, function(data) {
+		if (data.code == 200) {
+			layer.msg('添加成功');
+			setTimeout(function() {
+				layer.close(index);
+			}, 3000)
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}

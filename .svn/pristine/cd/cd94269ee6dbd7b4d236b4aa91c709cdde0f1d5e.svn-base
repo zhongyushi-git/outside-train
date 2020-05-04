@@ -1,0 +1,64 @@
+var WebAPI = {
+	'student': '../../../training/student/',
+	'teacher': '../../../training/teacher/',
+	'engineer': '../../../training/engineer/',
+	'instructor': '../../../training/instructor/',
+	'manage': '../../../training/manage/',
+}
+//角色页面跳转
+function forwardPage(role) {
+	var url = '../'
+	switch (role) {
+		case "student":
+			url += 'student'
+			break;
+		case "teacher":
+			url += 'teacher'
+			break;
+		case "instructor":
+			url += 'instructor'
+			break;
+		case "engineer":
+			url += 'engineer'
+			break;
+	}
+	url += '/index.html'
+	window.location.href = url
+}
+
+function exit() {
+	localStorage.clear()
+	window.location.href = loginUrl
+}
+var userRole = localStorage.getItem("role")
+var loginUrl = '../qtlogin/login.html'
+var base_url = location.protocol + location.host;
+var username = localStorage.getItem("username")
+var pathname = location.pathname
+if (username == null||userRole==null) {
+	if (!pathname.endsWith("login.html")) {
+		var href = ''
+		if (!pathname.includes(userRole)) {
+			alert("请先登录！")
+			if (pathname.endsWith("index.html")) {
+				href = loginUrl
+			} else {
+				href = '../' + loginUrl
+			}
+			window.location.href = href
+		}
+	}
+} else {
+	if (!pathname.endsWith("login.html")) {
+		var href = ''
+		if (!pathname.includes(userRole)) {
+			alert("权限不足，无法访问！")
+			if (pathname.endsWith("index.html")) {
+				href = loginUrl
+			} else {
+				href = '../' + loginUrl
+			}
+			window.location.href = href
+		}
+	}
+}

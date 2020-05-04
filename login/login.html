@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>用户登录</title>
+		<link rel="shortcut icon" href="img/favicon.ico" />
+		<link rel="stylesheet" href="../lib/layui/css/layui.css" media="all"/>
+		<link rel="stylesheet" href="css/login.css" media="all"/>
+		<script type="text/javascript" src="../lib/jquery/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js"></script>
+		<script type="text/javascript" src="../lib/assembly/jqarticle/jparticle.min.js"></script>
+		<script type="text/javascript" src="../lib/assembly/zylVerificationCode/zylVerificationCode.js"></script>
+		<style>
+			.layui-elem-quote{background-color: inherit!important;}
+			.layui-input, .layui-select, .layui-textarea{background-color: inherit; padding-left: 30px;}
+			.zyl_lofo_main{height:380px;width:360px}
+			#message{color: red;}
+			.img-div{margin-top:5px}
+			#missPassword{float:left}
+			#register{float:right}
+		</style>
+	</head>
+	<body>
+		<!-- Head -->
+		<div class="layui-fluid">
+			<div class="layui-row layui-col-space15">
+				<div class="layui-col-sm12 layui-col-md12 zyl_mar_01">
+					<blockquote class="layui-elem-quote"><h1>大学生校外实习实训管理系统<h1></blockquote>
+				</div>
+			</div>
+		</div>
+		<!-- Head End -->
+		
+		<!-- Carousel -->
+		<div class="layui-row">
+			<div class="layui-col-sm12 layui-col-md12">
+				<div class="layui-carousel zyl_login_height" id="zyllogin" lay-filter="zyllogin">
+					<div carousel-item="">
+						<div>
+							<div class="zyl_login_cont"></div>
+						</div>
+						<div>
+							<img src="img/carousel/01.jpg" />
+						</div>
+						<div>
+							<div class="background">
+								<span></span><span></span><span></span>
+								<span></span><span></span><span></span>
+								<span></span><span></span><span></span>
+								<span></span><span></span><span></span>
+							</div>
+						</div>
+						<div>
+							<img src="img/carousel/03.jpg" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Carousel End -->
+		
+		<!-- Footer -->
+		<div class="layui-row">
+			<div class="layui-col-sm12 layui-col-md12 zyl_center zyl_mar_01">
+				© 2019 - 大学生校外实习实训管理系统 || 大学生校外实习实训管理系统版权所有
+			</div>
+		</div>
+		<!-- Footer End -->
+		
+		<!-- LoginForm -->
+		<div class="zyl_lofo_main">
+			<fieldset class="layui-elem-field layui-field-title zyl_mar_02">
+				<legend>用户登录</legend>
+			</fieldset>
+			<div class="layui-row layui-col-space15">
+				<form class="layui-form zyl_pad_01" action="">
+					<div class="layui-col-sm12 layui-col-md12">
+						<div class="layui-form-item">
+							<input type="text" name="username" lay-verify="required|userName" placeholder="账号" class="layui-input">
+							<i class="layui-icon layui-icon-username zyl_lofo_icon"></i>
+						</div>
+					</div>
+					<div class="layui-col-sm12 layui-col-md12">
+						<div class="layui-form-item">
+							<input type="password" name="password" lay-verify="required|pass" placeholder="密码" class="layui-input">
+							<i class="layui-icon layui-icon-password zyl_lofo_icon"></i>
+						</div>
+					</div>
+					<div class="layui-col-sm12 layui-col-md12">
+						<div class="layui-form-item">
+							<select name="role" lay-verify="required">
+								<option></option>
+								<option value="student">学生</option>
+								<option value="teacher">教师</option>
+								<option value="instructor">辅导员</option>
+								<option value="engineer">企业工程师</option>
+							</select>
+							<i class="layui-icon layui-icon-vercode zyl_lofo_icon"></i>
+						</div>
+					</div>
+					<div class="layui-col-sm12 layui-col-md12">
+						<div class="layui-row">
+							<div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+								<div class="layui-form-item">
+									<input type="text" name="vercode" id="vercode" lay-verify="required|vercodes" autocomplete="off" placeholder="验证码" class="layui-input" maxlength="4">
+									<i class="layui-icon layui-icon-cellphone-fine zyl_lofo_icon"></i>
+								</div>
+							</div>
+							<div class="layui-col-xs8 layui-col-sm8 layui-col-md8" id="image">
+								<div class="layui-form-item img-div">
+									<img src=""/><a href="javascript:void(0)">看不清，换一张</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="layui-col-sm12 layui-col-md12">
+						<button class="layui-btn layui-btn-fluid layui-btn-normal" lay-submit="" lay-filter="login">立即登录</button>
+					</div>
+					<div class="layui-col-sm12 layui-col-md12">
+						<div id="missPassword"><a href="javascript:void(0)">忘记密码</a></div>
+						<div id="register"><a href="regist.html">还没有账号？点我注册</a></div>
+					</div>
+					<div id="message" class="layui-col-sm12 layui-col-md12"></div>
+				</form>
+			</div>
+		</div>
+		<script src="../config.js"></script>
+		<script src="js/login.js"></script>
+	</body>
+</html>

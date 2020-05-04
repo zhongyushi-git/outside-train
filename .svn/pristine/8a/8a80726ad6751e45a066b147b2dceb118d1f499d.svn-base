@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>成绩比例修改</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<style>
+			body {
+				margin: 10px;
+			}
+
+			.layui-input {
+				height: 30px;
+			}
+
+			.center {
+				line-height: 35px;
+				text-align: center;
+			}
+
+			table {
+				border-collapse: separate;
+				border-spacing: 0px 18px;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td>学期名称：</td>
+				<td><select class="layui-input" name="term_id" id="term_id"></select></td>
+			</tr>
+			<tr>
+				<td>实训名称：</td>
+				<td><select class="layui-input" name="train_name" id="train_name"></select></td>
+			</tr>
+			<tr>
+				<td>答辩成绩比例(单位：%)：</td>
+				<td><input class="layui-input" name="r1"></td>
+			</tr>
+			<tr>
+				<td>实训报告成绩比例(单位：%)：</td>
+				<td><input class="layui-input" name="r2"></td>
+			</tr>
+			<tr>
+				<td>平时成绩比例(单位：%)：</td>
+				<td><input class="layui-input" name="r3"></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="center">
+					<button class="layui-btn layui-btn-sm layui-btn-normal" id="save">保存</button>
+					<button class="layui-btn layui-btn-sm layui-btn-primary" id="cancel">取消</button>
+				</td>
+			</tr>
+		</table>
+	</body>
+	<script src="../../config.js"></script>
+	<script src="../../tool.js"></script>
+	<script>
+		$(function() {
+			layui.use(['layer'], function() {
+				layer = layui.layer;
+			})
+			getTermList();
+			getPlanList();
+			getOne();
+			$("#save").click(function() {
+				saveForm()
+			})
+			$("#cancel").click(function() {
+				parent.layer.close(window.parent.index);
+			})
+
+		})
+
+		function getOne() {
+			if (window.parent.addFlag) return;
+			$.ajax({
+				url: WebAPI.manage + 'ratio/getOneByAdmin?r_id=' + window.parent.arr[0],
+				async: false,
+				success: function(data) {
+					for (var p in data) { //遍历json对象的每个key/value对,p为key
+						if (p == "r1" || p == "r2" || p == "r3") {
+							data[p] = data[p] * 100
+						}
+						if (p == "name") {
+							$("select[name='train_name']").val(data[p]);
+						}
+						$("input[name='" + p + "']").val(data[p]);
+						$("select[name='" + p + "']").val(data[p]);
+					}
+				},
+				error: function() {
+					layer.alert("查询发生错误");
+				},
+			})
+		}
+		//获取实训计划信息
+		function getPlanList() {
+			var term_id = $("#term_id").val()
+			if (term_id == null || term_id == '') return;
+			$.ajax({
+				url: WebAPI.teacher + 'trainPlan/getPlanList?term_id=' + term_id,
+				async: false,
+				success: function(data) {
+					$("#train_name").html('');
+					var select = '';
+					for (var i = 0; i < data.length; i++) {
+						select += '<option value="' + data[i].id + '">' + data[i].train_name + '</option>';
+					}
+					$("#train_name").append(select);
+				},
+				error: function() {
+					layer.alert("查询信息发生错误");
+				}
+			})
+		}
+
+		function getTermList() {
+			$.ajax({
+				url: WebAPI.manage + 'term/getTermList',
+				async: false,
+				success: function(data) {
+					$("#term_id").html('');
+					var select = '';
+					for (var i = 0; i < data.length; i++) {
+						select += '<option value="' + data[i].term_id + '">' + data[i].term + '</option>';
+					}
+					$("#term_id").append(select);
+				},
+				error: function() {
+					layer.alert("查询发生错误");
+				},
+			})
+		}
+		//保存数据
+		function saveForm() {
+			var json = checkForm();
+			if (!json) {
+				return
+			}
+			$.ajax({
+				url: WebAPI.manage + 'ratio/saveByAdmin',
+				type: 'post',
+				data: JSON.stringify(json),
+				contentType: 'application/json',
+				success: function(data) {
+					if (data.code == 200) {
+						layer.alert("保存成功", function(i) {
+							//关闭父级弹框
+							parent.layer.close(window.parent.index);
+							layer.close(i)
+							window.parent.reloadTable()
+						});
+					} else {
+						layer.alert("保存失败");
+					}
+				},
+				error: function() {
+					layer.alert("保存发生错误");
+				},
+			})
+		}
+		//验证表单合法性
+		function checkForm() {
+			var data = {}
+			data.term_id = $("select[name='term_id']").val()
+			data.r_id = $("select[name='train_name']").val()
+			data.r1 = $("input[name='r1']").val()
+			data.r2 = $("input[name='r2']").val()
+			data.r3 = $("input[name='r3']").val()
+			if (data.term_id == null || data.term_id == '') {
+				layer.msg("请选择学期")
+				return
+			} else if (data.r_id == null || data.r_id == '') {
+				layer.msg("请选择实训名称")
+				return
+			} else if (!checkInteger(data.r1) || data.r1 > 100 || !checkInteger(data.r2) || data.r2 > 100|| !checkInteger(data.r3) || data.r3 > 100) {
+				layer.msg("成绩比例输入不合法,如比例是40%,可直接输入40")
+				return
+			}
+			data.r1 = data.r1 / 100
+			data.r2 = data.r2 / 100
+			data.r3 = data.r3 / 100
+			return data
+		}
+	</script>
+</html>

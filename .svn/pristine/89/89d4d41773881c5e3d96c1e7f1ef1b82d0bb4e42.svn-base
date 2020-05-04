@@ -1,0 +1,115 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+//记录选中的学号
+var sno_checked = 0;
+$(function() {
+	layui.use(['layer', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table,
+			form = layui.form;
+
+		var WebAPI = {};
+		WebAPI.teacher = "http://127.0.0.1:8889/demo/"
+		var classes = $("select[name='classes']").val();
+		var sno = $("input[name='sno']").val();
+		var name = $("input[name='name']").val()
+		table.render({
+			elem: '#table',
+			url: WebAPI.teacher + 'student/queryByEng?classes=' + classes + '&sno=' + sno + '&name=' + name,
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[	{ field: 'leaveId', title: 'ID', hide:true },
+					{
+						field: 'sno',
+						title: '学号',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						field: 'name',
+						title: '姓名',
+						unresize: true,
+						align: 'center'
+					},
+					{
+						field: 'classes',
+						title: '申请时间',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						field: 'reply_socre',
+						title: '请假时间',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						field: 'reply_socre',
+						title: '审批状态',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						fixed: 'right',
+						title: '操作',
+						toolbar: '#topTool',
+						width: 200,
+						align:'center',
+						unresize: true,
+						
+					}
+				]
+			],
+		})
+		//监听工具条
+		table.on('tool(table)', function(obj) {
+			var data = obj.data;
+			var layEvent = obj.event;
+			if (layEvent === 'detail') {
+				layer.msg("详情")
+			}else if(layEvent === 'agree'){
+				layer.msg("同意");
+				updateLeaveStatus(data.leaveId,1)
+			}else if(layEvent === 'refuse'){
+				layer.msg("拒绝");
+				updateLeaveStatus(data.leaveId,2)
+			}
+		})
+			
+		
+
+	})
+
+	//按钮的监听
+	$("#search").click(function() {
+		reloadTable()
+	});
+	
+
+})
+
+//搜索时重载表格
+function reloadTable() {
+	table.reload('tableReload', {
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//修改审批的状态
+function updateLeaveStatus(leaveId,status) {
+	var WebAPI = {}
+	WebAPI.student = ''
+	$.get(WebAPI.student + "process/updateLeaveStatus", {
+		leaveId: leaveId,
+		status: status
+	}, function(data) {
+		if (data.code == 200) {
+			layer.msg('添加成功');
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}

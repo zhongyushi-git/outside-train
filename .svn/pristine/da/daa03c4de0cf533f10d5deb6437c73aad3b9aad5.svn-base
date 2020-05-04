@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>学生批假</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<script id="topTool">
+			<a href="javascript:void(0)" lay-event='detail'>查看详情</a>&nbsp;&nbsp;
+			<a href="javascript:void(0)" lay-event='agree'>同意请假</a>&nbsp;&nbsp;
+			<a href="javascript:void(0)" lay-event='refuse'>拒绝请假</a>&nbsp;&nbsp
+			<a href="javascript:void(0)" lay-event='agree2'>同意销假</a>&nbsp;&nbsp;
+			<a href="javascript:void(0)" lay-event='refuse2'>拒绝销假</a>
+		</script>
+		<style>
+			body{
+				margin: 10px;
+			}
+			.layui-input{
+				height: 30px;
+			}
+			.center{
+				text-align: right;
+				line-height: 30px;
+			}
+			.right{
+				float: right;
+			}
+			a{
+				color: #5CACEE;
+			}
+			a:hover{
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 搜索栏 -->
+			<div class="layui-row">
+				<div class="layui-col-md1 center">
+					<div class="right">班级：</div>
+				</div>
+				<div class="layui-col-md1">
+					<select class="layui-input" name="classes">
+						<option value="计算机1163">计算机1163</option>
+					</select>
+				</div>
+				<div class="layui-col-md1 center ">
+					<div class="right">学号：</div>
+				</div>
+				<div class="layui-col-md1">
+					<input type="text" class="layui-input" name="sno">
+				</div>
+				<div class="layui-col-md1 center">
+					<div class="right">姓名：</div>
+				</div>
+				<div class="layui-col-md1">
+					<input type="text" class="layui-input" name="name">
+				</div>
+				<div class="layui-col-md1 center">
+					<div class="right">请假审核状态：</div>
+				</div>
+				<div class="layui-form layui-col-md1" lay-filter="">
+					<select name="leave_status">
+						<option value="">全部</option>
+						<option value="0" selected="selected">待审核</option>
+						<option value="1">已通过</option>
+						<option value="2">未通过</option>
+					</select>
+				</div>
+				<div class="layui-col-md1 center">
+					<div class="right">销假审核状态：</div>
+				</div>
+				<div class="layui-form layui-col-md1" lay-filter="">
+					<select name="backLeave_status">
+						<option value="">全部</option>
+						<option value="0">待审核</option>
+						<option value="1">已通过</option>
+						<option value="2">未通过</option>
+						<option value="3">未销假</option>
+					</select>
+				</div>
+				<div class="layui-col-md1">
+					<div class="right"> 
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="search">搜索</button>
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="clear">重置</button>
+					</div>
+				</div>
+			</div>
+			<!-- 表格栏 -->
+			<div  class="layui-row">
+				<table id="table" lay-filter="table"></table>
+			</div>
+		</div>
+	</body>
+	<script src="../../config.js"></script>
+	<script src="../js/approvalLeave.js"></script>
+</html>

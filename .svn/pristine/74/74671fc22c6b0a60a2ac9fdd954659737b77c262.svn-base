@@ -1,0 +1,71 @@
+var layer,laydate;
+$(function(){
+	layui.use(['layer','laydate'],function(){
+		layer=layui.layer,
+		laydate=layui.laydate;
+		
+		
+		laydate.render({
+			elem: '#startTime',
+			type: 'datetime',
+			trigger: 'click',
+		});
+			
+		laydate.render({
+			elem: '#endTime',
+			type: 'datetime',
+			trigger: 'click',
+		});
+	})
+	
+	//保存请假申请
+	$("#save").click(function(){
+		var WebAPI={};
+		WebAPI.student=""
+		var json=checkInput();
+		if(!json)return;
+		$.get(WebAPI.student+"process/leave",{jsonStr:JSON.stringify(json)},function(data){
+			if(data.code==200){
+				layer.alert("请假成功",function(){
+					//关闭父级弹框
+					 parent.layer.close(window.parent.index1);
+				});
+			}else{
+				layer.alert("请假失败");
+			}
+		})
+	})
+	
+})
+//检查输入的内容
+function checkInput(){
+	var json={};
+	var startTime=$("#startTime").val();
+	var endTime=$("#endTime").val();
+	var reason=$("textarea[name='reason']").val();
+	var remark=$("textarea[name='remark']").val();
+	if(startTime.length<=0||endTime.length<=0){
+		layer.msg("请假时间不能为空");
+		return;
+	}else if(new Date(startTime.replace(/-/g,"/"))>=new Date(endTime.replace(/-/g,"/"))){
+		layer.msg("请假结束时间必须在开始时间之后");
+		return;
+	}else if(reason.length<=0){
+		layer.msg("请假原因为必填项");
+		return;
+	}else{
+		json.startTime=startTime;
+		json.endTime=endTime;
+		json.reason=reason;
+		json.remark=remark;
+	}
+	return json;
+}
+
+// layer.open({
+// 				type: 2,
+// 				btn: false,
+// 				area:['550px','420px'],
+// 				title:['请假申请','15px'],
+// 				content: 'leave.html'
+// 			})

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>销假申请</title>
+		<link rel="stylesheet" href="layui/css/layui.css" />
+		<script src="jquery-3.2.1.min.js"></script>
+		<script src="layui/layui.js"></script>
+		<script type="text/html" id="toolbarDemo">
+		  <div class="layui-btn-container">
+		    <button class="layui-btn layui-btn-sm" lay-event="backLeaveBtn">销假</button>
+		  </div>
+		</script>
+		<style type="text/css">
+			body{
+				margin: 10px;
+			}
+			.layui-input{
+				height: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<table id="table" lay-filter="table"></table>
+	</body>
+	<script src="backLeave.js"></script>
+</html>

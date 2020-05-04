@@ -1,0 +1,101 @@
+var layer, laydate, table, form;
+var time, attend_id;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function () {
+    layui.use(['layer', 'laydate', 'table', 'form'], function () {
+        layer = layui.layer,
+            laydate = layui.laydate,
+            table = layui.table,
+            form = layui.form;
+
+        laydate.render({
+            elem: '#time',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#time2',
+            type: 'datetime'
+        });
+        $("#time").val(dateFormat('YYYY-mm-dd HH:MM:SS', new Date()))
+        $("#time2").val(dateFormat('YYYY-mm-dd HH:MM:SS', new Date(preDate(1, 15))))
+
+        inintTable();
+     
+    })
+
+    $("#search").click(function () {
+        reloadTable()
+    });
+
+})
+
+//初始化表格
+function inintTable() {
+    var json = getValue();
+    table.render({
+        elem: '#table',
+        url: WebAPI.manage + 'emailLog/getListByAdmin?times=' + json.times,
+        page: true,
+        id: 'tableReload',
+        height: 'full-235',
+        cols: [
+            [
+                {
+                    field: 's_id',
+                    title: '学号',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'name',
+                    title: '姓名',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'time',
+                    title: '预警时间',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'title',
+                    title: '预警类型',
+                    unresize: true,
+                    align: 'center'
+                },
+				{
+				    field: 'train_id',
+				    title: '实训名称',
+				    unresize: true,
+				    align: 'center'
+				},
+            ]
+        ],
+    })
+}
+
+//搜索时重载表格
+function reloadTable() {
+    var json = getValue();
+    table.reload('tableReload', {
+       url: WebAPI.manage + 'emailLog/getListByAdmin?times=' + json.times,
+        page: {
+            curr: 1, //设置当前页面为第一页
+        },
+    }, 'data')
+}
+
+function getValue() {
+    var json = {};
+    json.times = $("#time2").val() + ',' + $("#time").val();
+    return json;
+}
+
+
+
+
+
+
+

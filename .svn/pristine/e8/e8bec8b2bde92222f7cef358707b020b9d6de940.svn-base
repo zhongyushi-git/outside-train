@@ -1,0 +1,100 @@
+var layer,laydate,table,form;
+var date,date1;
+var sno='10210416301'	
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function(){
+	
+	layui.use(['layer','laydate','table','form'],function(){
+		layer=layui.layer,
+		laydate=layui.laydate,
+		table=layui.table,
+		form=layui.form;
+		
+	
+		
+		laydate.render({
+			elem: '#date_time',
+			type: 'month',
+			trigger: 'click'
+		});
+		date1=dateFormat('YYYY-mm',new Date())
+		$("#date_time").val(date1);
+		
+		inintTable(sno);
+		toolbarListen();
+		
+	})
+	
+	$("#search").click(function(){
+		date1=$("input[name='date_time']").val()
+		reloadTable(sno)
+	});
+	
+})
+function inintTable(sno){
+	table.render({
+		elem: '#table',
+		url: WebAPI.engineer + 'attend/queryByStu?date1='+date1+'&sno='+sno ,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[
+				 { field: 'sno', title: 'ID', hide:true },
+				 { field: 'time', title: 'time', hide:true },
+				{
+					field: 'attend_time',
+					title: '日期',
+					unresize: true,
+					align:'center',
+					unresize: true,
+				},
+				{
+					field: 'attend_teacher',
+					title: '考勤老师',
+					unresize: true,
+					align:'center',
+					unresize: true,
+				},
+				{
+					field: 'count',
+					title: '考勤次数',
+					unresize: true,
+					align:'center',
+				},
+				{
+					fixed: 'right',
+					title: '操作',
+					toolbar: '#oper-col',
+					align:'center'
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable(sno) {
+	table.reload('tableReload', {
+		url:WebAPI.engineer + 'attend/queryByStu?date1='+date1+'&sno='+sno,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'detail') {
+			date=data.time;
+			layer.open({
+				type: 2,
+				btn: false,
+				area:['810px','610px'],
+				title:['考勤详情','15px'],
+				content: 'attendanceDetail.html'
+			})
+		}
+	})
+}

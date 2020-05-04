@@ -1,0 +1,188 @@
+var layer, laydate, table, form;
+var date, attend_id;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function() {
+	layui.use(['layer', 'laydate', 'table', 'form'], function() {
+		layer = layui.layer,
+			laydate = layui.laydate,
+			table = layui.table,
+			form = layui.form;
+
+
+		laydate.render({
+			elem: '#date1',
+		});
+
+		getTermList();
+		getClassList();
+		inintTable();
+		toolbarListen();
+
+		$("#clear").click(function() {
+			$("input[name='name']").val('');
+			$("input[name='sno']").val('');
+		})
+
+		$("#search").click(function() {
+			reloadTable()
+		});
+		$("#term_id").change(function(){
+			getPlanList();
+		})
+		//当单击表格行时,把单选按钮设为选中状态
+		$(document).on("click", ".layui-table-body table.layui-table tbody tr", function() {
+		    var obj = event ? event.target : event.srcElement;
+		    var tag = obj.tagName;
+		    var checkbox = $(this).find("td div.laytable-cell-radio div.layui-form-radio I");
+		    if (checkbox.length != 0) {
+		        if (tag == 'DIV') {
+		            checkbox.click();
+		        }
+		    }
+		});
+		$(document).on("click", "td div.laytable-cell-radio div.layui-form-radio", function(e) {
+		    e.stopPropagation();
+		})
+	})
+
+})
+//初始化表格
+function inintTable() {
+	var json = getValue();
+	table.render({
+		elem: '#table',
+		url: WebAPI.teacher + 'report/getListByTea?term_id=' + json.term_id + '&classes=' + json.classes + '&sno=' +
+			json.sno + '&name=' +
+			json.name,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[{
+					type: 'radio'
+				},
+				{
+					field: 'file_id',
+					title: 'ID',
+					hide: true
+				},
+				{
+					field: 'sno',
+					title: '学号',
+					unresize: true,
+					align: 'center',
+					width: 200,
+				},
+				{
+					field: 'name',
+					title: '姓名',
+					unresize: true,
+					align: 'center',
+					width: 150,
+				},
+				{
+					field: 'old_name',
+					title: '文件名',
+					unresize: true,
+					align: 'center',
+				}, {
+					fixed: 'right',
+					title: '操作',
+					toolbar: '#oper-col',
+					width: 120,
+					align: 'center'
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	var json = getValue();
+	table.reload('tableReload', {
+		url: WebAPI.teacher + 'report/getListByTea?term_id=' + json.term_id + '&classes=' + json.classes + '&sno=' + json.sno +
+			'&name=' +
+			json.name,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'download') {
+			//文件下载不能使用ajax方式,可以使用下面的方式或表单提交的方式
+			window.location.href = WebAPI.teacher + 'report/download?filename=' + data.new_name + 
+			'&path=' + data.url + '&old_name=' + data.old_name;
+		}
+	})
+}
+//获取输入的内容
+function getValue() {
+	var json = {};
+	json.term_id = $("select[name='id']").val();
+	json.classes = $("select[name='classes']").val();
+	json.sno = $("input[name='sno']").val();
+	json.name = $("input[name='name']").val();
+	return json;
+}
+//获取学期信息
+function getTermList() {
+	$.ajax({
+		url: WebAPI.manage + 'term/getTermList',
+		async: false,
+		success: function(data) {
+			$("#term_id").html('');
+			var select = '';
+			for (var i = 0; i < data.length; i++) {
+				select += '<option value="' + data[i].term_id + '">' + data[i].term + '</option>';
+			}
+			$("#term_id").append(select);
+		},
+		error: function() {
+			layer.alert("查询学期信息发生错误");
+		}
+	})
+	getPlanList() 
+}
+//获取班级信息
+function getClassList() {
+	$.ajax({
+		url: WebAPI.manage + 'class/getClassList',
+		async: false,
+		success: function(data) {
+			$("#classes").html('');
+			var select = '';
+			for (var i = 0; i < data.length; i++) {
+				select += '<option value="' + data[i].class_id + '">' + data[i].class_name + '</option>';
+			}
+			$("#classes").append(select);
+		},
+		error: function() {
+			layer.alert("查询班级信息发生错误");
+		}
+	})
+}
+//获取实训计划信息
+function getPlanList() {
+	var term_id=$("#term_id").val();
+	if(term_id==null || term_id=='')return;
+	$.ajax({
+		url: WebAPI.teacher + 'trainPlan/getPlanList?term_id='+term_id,
+		async: false,
+		success: function(data) {
+			$("#id").html('');
+			var select = '';
+			for (var i = 0; i < data.length; i++) {
+				select += '<option value="' + data[i].id + '">' + data[i].train_name + '</option>';
+			}
+			$("#id").append(select);
+		},
+		error: function() {
+			layer.alert("查询学期信息发生错误");
+		}
+	})
+}

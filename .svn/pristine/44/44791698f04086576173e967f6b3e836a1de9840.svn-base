@@ -1,0 +1,158 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+//记录选中的学号
+var sno_checked = 0;
+var status_arr = ['待审核', '已通过', '未通过'];
+$(function() {
+	layui.use(['layer', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table,
+			form = layui.form;
+
+
+		inintTable();
+		listenTool();
+
+	})
+
+	//按钮的监听
+	$("#search").click(function() {
+		reloadTable()
+	});
+	$("#clear").click(function() {
+		$("input[name='name']").val('');
+		$("select[name='classes']").val('计算机1163');
+		$("input[name='sno']").val('');
+	})
+
+})
+//初始化表格
+function inintTable() {
+	var json=getValue();
+	console.log(json)
+	table.render({
+		elem: '#table',
+		url: WebAPI.instructor + 'leave/getLeaveListByIns?classes=' + json.classes + '&sno=' + json.sno + '&name=' + json.name +
+			'&leave_status=' + json.leave_status,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[{
+					field: 'leave_id',
+					title: 'ID',
+					hide: true
+				},
+				{
+					field: 'sno',
+					title: '学号',
+					unresize: true,
+					align: 'center',
+				},
+				{
+					field: 'name',
+					title: '姓名',
+					unresize: true,
+					align: 'center'
+				},
+				{
+					field: 'classes',
+					title: '班级',
+					unresize: true,
+					align: 'center',
+				},
+				{
+					field: 'start_time',
+					title: '请假时间',
+					unresize: true,
+					align: 'center',
+					width: 400,
+					templet: function(d) {
+						if (d.start_time != null && d.end_time != null) {
+							d.start_time = d.start_time + ' 至 ' + d.end_time;
+						}
+						return d.start_time;
+					}
+				},
+				{
+					field: 'leave_status',
+					title: '审批状态',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						return status_arr[d.leave_status]
+					}
+				},
+				{
+					fixed: 'right',
+					title: '操作',
+					toolbar: '#topTool',
+					width: 200,
+					align: 'center',
+					unresize: true,
+
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	var json=getValue();
+	table.reload('tableReload', {
+		url: WebAPI.instructor + 'leave/getLeaveListByIns?classes=' + json.classes + '&sno=' + json.sno + '&name=' + json.name +
+			'&leave_status=' + json.leave_status,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function listenTool() {
+	//监听工具条
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'detail') {
+			layer.open({
+				type: 2,
+				btn: false,
+				area: ['610px', '590px'],
+				title: ['请假详情', '15px'],
+				content: 'leaveDetail.html?id=' + data.leave_id
+			})
+		} else if (layEvent === 'agree') {
+			if(data.leave_status!=0){
+				layer.msg("此请假申请已审核,请勿重复审核");
+				return;
+			}
+			updateLeaveStatus(data.leave_id, 1)
+		} else if (layEvent === 'refuse') {
+			if(data.leave_status!=0){
+				layer.msg("此请假申请已审核,请勿重复审核");
+				return;
+			}
+			updateLeaveStatus(data.leave_id, 2)
+		}
+	})
+}
+//修改审批的状态
+function updateLeaveStatus(leave_id, leave_status) {
+	$.get(WebAPI.instructor + "leave/updateStatus/" + leave_id + '/' + leave_status, function(data) {
+		if (data.code == 200) {
+			layer.msg("审批成功");
+			reloadTable();
+		} else {
+			layer.msg(data.msg);
+		}
+	})
+}
+//获取输入的内容
+function getValue() {
+	var json = {};
+	json.classes = $("select[name='classes']").val();
+	json.sno = $("input[name='sno']").val();
+	json.name = $("input[name='name']").val()
+	json.leave_status = $("select[name='leave_status']").val()
+	return json;
+}

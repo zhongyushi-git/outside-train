@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>答辩成绩查询</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<style>
+			body{
+				margin: 10px;
+			}
+			.layui-input{
+				height: 30px;
+			}
+			 .center{
+				line-height: 35px;
+			 }
+			 .right{
+				 float: right;
+			 }
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 搜索栏 -->
+			<div class="layui-row">
+				<div class="layui-col-md1 center" style="width: 80px;">
+					<div class="right">学期：</div>
+				</div>
+				<div class="layui-col-md2" style="width: 150px;">
+					<select class="layui-input" name="term_id">
+						<option value="2019202001">2019-2020第一学期</option>
+					</select>
+				</div>
+				<div class="layui-col-md1 center" style="width: 80px;">
+					<div class="right">班级：</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<select class="layui-input" name="classes" id="classes">
+						<option value="计算机1163">计算机1163</option>
+					</select>
+				</div>
+				<div class="layui-col-md1 center " style="width: 80px;">
+					<div class="right">学号：</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<input type="text" class="layui-input" name="sno" id="sno">
+				</div>
+				<div class="layui-col-md1 center" style="width: 80px;">
+					<div class="right">姓名：</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<input type="text" class="layui-input" name="name" id="name">
+				</div>
+				<div class="layui-col-md3">
+					<div class="right"> 
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="search">搜索</button>
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="clear">重置</button>
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="addReplySocre">录入答辩成绩</button>
+						<button class="layui-btn layui-btn-sm layui-btn-normal" id="addAttend">记录考勤信息</button>
+					</div>
+				</div>
+			</div>
+			<!-- 表格栏 -->
+			<div  class="layui-row">
+				<table id="table" lay-filter="table"></table>
+			</div>
+		</div>
+	</body>
+	<script src="../../config.js"></script>
+	<script src="../js/attendAndReply.js"></script>
+</html>

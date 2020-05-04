@@ -1,0 +1,42 @@
+var data=window.parent.data;//获取父级的数据
+$(function() {
+	layui.use(['layer', 'laydate', ], function() {
+		var layer = layui.layer,
+			laydate = layui.laydate;
+		
+		laydate.render({
+			elem: '#time1',
+			type: 'time',
+			trigger: 'click' //采用click弹出
+		})
+		
+		//初始化输入框
+		$("input[name='date1']").val(dateFormat('YYYY-mm-dd',new Date()));
+		$("input[name='time1']").val(dateFormat('HH:MM:SS',new Date()));
+		$("input[name='sno']").val(data.sno)
+		$("input[name='name']").val(data.name)
+		
+		$("#save").click(function(){
+			var attend_time=$("input[name='date1']").val()+" "+$("input[name='time1']").val();
+			var attend_addr=$("input[name='attend_addr']").val();
+			var attend_remark=$("textarea[name='attend_remark']").val();
+			var sno=$("input[name='sno']").val();
+			$.get(WebAPI.engineer+'attend/addAttend',{
+				attend_time:attend_time,
+				attend_addr:attend_addr,
+				attend_remark:attend_remark,
+				sno:sno
+			},function(data){
+				if (data.code == 200) {
+					layer.msg('添加成功');
+					setTimeout(function() {
+						parent.layer.close(window.parent.index);
+					}, 3000)
+				} else {
+					layer.msg(data.msg)
+				}
+			})
+		})
+	})
+})
+			

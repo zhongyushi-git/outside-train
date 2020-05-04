@@ -1,0 +1,137 @@
+var layer, laydate, table, form;
+var sno=localStorage.getItem("username")
+
+$(function () {
+    layui.use(['layer', 'table', 'form'], function () {
+        layer = layui.layer,
+            table = layui.table,
+            form = layui.form;
+
+        getTermList();
+        inintTable();
+    })
+
+    //按钮的监听
+    $("#search").click(function () {
+        reloadTable();
+    });
+
+
+})
+
+//初始化表格
+function inintTable() {
+    var term_id = $("select[name='term_id']").val();
+    table.render({
+        elem: '#table',
+        url: WebAPI.student + 'score/queryScoreByStu?term_id=' + term_id + '&sno=' + sno,
+        page: true,
+        id: 'tableReload',
+        cols: [
+            [{
+                field: 'sno',
+                title: '学号',
+                unresize: true,
+                align: 'center',
+            },
+                {
+                    field: 'name',
+                    title: '姓名',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'classes',
+                    title: '班级',
+                    unresize: true,
+                    align: 'center',
+                },
+                {
+                    field: 'term_id',
+                    title: '实训名称',
+                    unresize: true,
+                    align: 'center',
+                },
+                {
+                    field: 'reply_score',
+                    title: '答辩成绩',
+                    unresize: true,
+                    align: 'center',
+                    templet: function (d) {
+                        if (d.reply_score == 0 || d.reply_score == null) {
+                            d.reply_score = '-';
+                        }
+                        return d.reply_score
+                    }
+                },
+                {
+                    field: 'train_score',
+                    title: '实训报告成绩',
+                    unresize: true,
+                    align: 'center',
+                    templet: function (d) {
+                        if (d.train_score == 0 || d.train_score == null) {
+                            d.train_score = '-';
+                        }
+                        return d.train_score
+                    }
+                },
+				{
+				    field: 'daily_score',
+				    title: '平时成绩',
+				    unresize: true,
+				    align: 'center',
+				    templet: function (d) {
+				        if (d.daily_score == null) {
+				            d.daily_score = '-';
+				        }
+				        return d.daily_score
+				    }
+				},
+                {
+                    field: 'all_score',
+                    title: '综合成绩',
+                    unresize: true,
+                    align: 'center',
+                    templet: function (d) {
+                        if (d.all_score == 0 || d.all_score == null) {
+                            d.all_score = '-';
+                        }
+                        return d.all_score
+                    }
+                }
+            ]
+        ],
+    })
+}
+
+//搜索时重载表格
+function reloadTable() {
+    var term_id = $("select[name='term_id']").val();
+    table.reload('tableReload', {
+        url: WebAPI.student + 'score/queryScoreByStu?term_id=' + term_id + '&sno=' + sno,
+        page: {
+            curr: 1, //设置当前页面为第一页
+        },
+    }, 'data')
+}
+
+//获取学期信息
+function getTermList() {
+    $.ajax({
+        url: WebAPI.manage + 'term/getTermList',
+        async: false,
+        success: function (data) {
+            $("#term_id").html('');
+            var select = '';
+            for (var i = 0; i < data.length; i++) {
+                select += '<option value="' + data[i].term_id + '">' + data[i].term + '</option>';
+            }
+            $("#term_id").append(select);
+        },
+        error: function () {
+            layer.alert("查询学期信息发生错误");
+        }
+    })
+}
+

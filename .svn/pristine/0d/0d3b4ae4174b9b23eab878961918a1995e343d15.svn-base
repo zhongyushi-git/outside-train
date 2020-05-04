@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>考勤信息(学生查询)</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<!-- 操作列 -->
+		<script type="text/html" id="oper-col">
+			<a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="detail">查看详情</a>
+		</script>
+		<style>
+			.layui-input{
+				height: 30px;
+			}
+			.right{
+				float: right;
+				 line-height:35px
+			}
+			body{
+				margin:10px
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 搜索栏 -->
+			<div class="layui-row">
+				<div class="layui-col-md1">
+					<div class="right">学期：</div>
+				</div>
+				<div class="layui-col-md2"  style="width: 150px;">
+					<select class="layui-input" name="term_id" id="term_id"></select>
+				</div>
+				<div class="layui-col-md1 center">
+					<div class="right">实训名称：</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<select class="layui-input" name="id" id="id"></select>
+				</div>
+				<div class="layui-col-md1">
+					<div class="right">时间：</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<input type="text" class="layui-input" name="time2" id="time">
+				</div>
+				<div class="layui-col-md1" style="width: 15px;">
+					<div class="right">至</div>
+				</div>
+				<div class="layui-col-md1" style="width: 150px;">
+					<input type="text" class="layui-input" name="time" id="time2">
+				</div>
+				<div class="2">
+					&nbsp;&nbsp;&nbsp;
+					<button class="layui-btn layui-btn-sm layui-btn-normal" id="search">查询</button>
+					<button class="layui-btn layui-btn-sm layui-btn-normal" id="tableAnalysis">分析</button>
+				</div>
+			</div>
+			<!-- 表格栏 -->
+			<div>
+				<table id="table" lay-filter="table"></table>
+			</div>
+		</div>
+	</body>
+	<script src="../../config.js"></script>
+	<script src="../../tool.js"></script>
+	<script src="../js/attendance.js"></script>
+</html>

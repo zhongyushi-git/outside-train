@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>答题详情</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<style>
+			.layui-table, .layui-table-view {
+			    margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<table id="table" lay-filter="table"></table>
+	</body>
+	<script src="../../config.js"></script>
+	<script>
+		var layer,  table;
+		var parentData=window.parent.parentData;
+		$(function() {
+			layui.use(['layer', 'table'], function() {
+				layer = layui.layer;
+				table = layui.table;
+
+				table.render({
+				    elem: '#table',
+				    url: WebAPI.teacher + 'work/getAnswerList/' + parentData.id,
+				    page: true,
+				    id: 'tableReload',
+				    height: 'full-10',
+				    cols: [
+				        [
+				            {
+				                field: 'username',
+				                title: '学生学号',
+				                unresize: true,
+				                align: 'center',
+								width:120
+				            },
+				            {
+				                field: 'answers',
+				                title: '学生答案',
+				                unresize: true,
+				                align: 'center'
+				            }
+				        ]
+				    ],
+				})
+				
+			});
+		})
+
+		
+	</script>
+</html>

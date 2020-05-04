@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>基页面</title>
+		<link rel="stylesheet" href="layui/css/layui.css" />
+		<script src="jquery-3.2.1.min.js"></script>
+		<script src="layui/layui.js"></script>
+	</head>
+	<body>
+	</body>
+	<script>
+		var index1;
+		layui.use('layer',function(){
+			var layer=layui.layer;
+			index1=layer.open({
+							type: 2,
+							btn: false,
+							area:['550px','450px'],
+							title:['请假申请','15px'],
+							content: 'student/leave.html'
+						})
+		})
+	</script>
+</html>

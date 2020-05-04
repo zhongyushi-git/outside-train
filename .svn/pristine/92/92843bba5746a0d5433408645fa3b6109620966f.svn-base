@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>考勤详情</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css"/>
+    <script src="../../jquery-3.2.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <style>
+        body {
+            margin: 10px
+        }
+
+        .right {
+            float: right;
+            margin-right: 10px;
+        }
+
+        #count {
+            font-size: 18px;
+            color: #0000FF;
+        }
+
+        img {
+            width: 30px;
+            height: 40px;
+        }
+
+        table {
+            max-height: 270px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div class="right">
+        <span>综合考勤次数：<i id="count">0</i></span>
+    </div>
+    <table class="layui-table" lay-skin="line" style="height: 100px;">
+        <thead>
+        <th></th>
+        <th>考勤日期</th>
+        <th>次数</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div id="page"></div>
+</body>
+<script src="../../config.js"></script>
+<script src="../js/attendanceDetail.js"></script>
+</html>

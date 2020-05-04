@@ -1,0 +1,136 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+//记录选中的学号
+var  arr = [];
+$(function() {
+	layui.use(['layer', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table,
+			form = layui.form;
+
+		var classes = $("select[name='classes']").val();
+		var sno = $("input[name='sno']").val();
+		var name = $("input[name='name']").val()
+		table.render({
+			elem: '#table',
+			url: WebAPI.student + 'socre/queryReplyByTea?classes=' + classes + '&sno=' + sno + '&name=' + name,
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[{
+						type: 'checkbox'
+					},
+					{
+						field: 'id',
+						title: '学号',
+						unresize: true,
+						width: 150,
+						align: 'center',
+						hide: true
+					},
+					{
+						field: 'name',
+						title: '姓名',
+						unresize: true,
+						width: 150,
+						align: 'center'
+					},
+					{
+						field: 'classes',
+						title: '班级',
+						unresize: true,
+						align: 'center',
+						width: 150,
+					},
+					{
+						field: 'reply_socre',
+						title: '答辩成绩',
+						unresize: true,
+						align: 'center',
+						width: 150,
+						templet: function(d) {
+							if (d.reply_socre == 0 || d.reply_socre == null) {
+								d.reply_socre = '-';
+								return d.reply_socre
+							}
+						}
+					}
+				]
+			],
+		})
+		
+
+		//监听复选框事件
+		table.on('checkbox(table)', function(obj) {
+			var data = obj.data;
+			if (obj.checked) {
+				arr.push(data.id)
+			} else {
+				for (var i = 0; i < arr.length; i++) {
+					if (data.id === arr[i]) {
+						arr.splice(i, 1)
+					}
+				}
+			}
+			console.log(arr)
+
+		});
+
+		// 当单击表格行时,把多选按钮设为选中状态
+		$(document).on("click", ".layui-table-body table.layui-table tbody tr", function() {
+			var obj = event ? event.target : event.srcElement;
+			var tag = obj.tagName;
+			var checkbox = $(this).find("td div.laytable-cell-checkbox div.layui-form-checkbox I");
+			if (checkbox.length != 0) {
+				if (tag == 'DIV') {
+					checkbox.click();
+				}
+			}
+		});
+		$(document).on("click", "td div.laytable-cell-checkbox div.layui-form-checkbox", function(e) {
+			e.stopPropagation();
+		});
+
+	})
+
+	//按钮的监听
+	$("#search").click(function() {
+		reloadTable()
+	});
+	$("#submitAllSocre").click(function() {
+		if (arr.length == 0) {
+			layer.msg('至少选择一行数据!');
+			return;
+		}
+		layer.confirm("确定提交综合成绩吗？", {},
+			function(index, layero) {
+				submitAllSocre(arr)
+			}
+		);
+
+	});
+})
+
+//搜索时重载表格
+function reloadTable() {
+	table.reload('tableReload', {
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//添加答辩成绩
+function submitAllSocre(arr) {
+	var WebAPI = {}
+	WebAPI.student = ''
+	$.get(WebAPI.student + "socre/submitAllSocre", {
+		snoArr: arr
+	}, function(data) {
+		if (data.code == 200) {
+			layer.msg('提交成功');
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}

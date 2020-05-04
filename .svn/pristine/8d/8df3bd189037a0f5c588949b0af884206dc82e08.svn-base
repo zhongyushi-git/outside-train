@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>学生系统</title>
+		<link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../lib/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/index.css">
+		<link rel="stylesheet" href="css/skins/_all-skins.css">
+
+		<style>
+			/* 修改bootstrap的样式 */
+			.sidebar-menu li.header {
+				font-size: 16px;
+			}
+
+			/* 自定义的样式 */
+			body {
+				padding: 0;
+				overflow: hidden;
+			}
+
+			#top {
+				height: 60px;
+				width: 100%;
+				background: #0856FF;
+			}
+			#top .top-info{
+				height: 100%;
+			}
+			#top .top-info2{
+				height: 100%;
+			}
+			#top .p-title{
+				margin-left: 10px;
+				font-size: 30px;
+				color: #ffffff;
+				font-weight: bold;
+				line-height: 60px;
+			}
+			#top .user-info{
+				float: right;;
+				font-size: 14px;
+				line-height: 60px;
+				margin-right: 20px;
+			}
+			#top .user-info a{
+				color: #ffffff;
+			}
+			#top .user-info a i{
+				font-size: 6px;
+			}
+			#top .user-info .user-info-edit{
+				background: #9F79EE;
+				line-height: 25px;
+				position: absolute;
+				z-index: 99999;
+				top:45px;
+				right: 15px;
+				width: 80px;
+				color: #ffffff;
+				text-align: center;
+				display: none;
+			}
+			#top .user-info .user-info-edit li:hover{
+				background:#32CD32
+			}
+			.left {
+				background: #009ACD;
+				height: calc(100vh - 60px);
+			}
+
+			.left li {
+				font-size: 16px;
+				color: #ffffff;
+			}
+
+			.left li span {
+				font-size: 16px;
+				color: #ffffff;
+			}
+
+			.left li a {
+				color: #ffffff;
+			}
+
+			.left li a m {
+				font-size: 14px;
+			}
+			
+			.left li.treeview ul li:hover{
+				background:#32CD32
+			}
+			iframe{
+				width: 100%;
+				height: calc(100vh - 60px);
+			}
+			.left-w{
+				width: 12%;
+			}
+			.iframe-w{
+				width: 88%;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 顶部 -->
+			<div class="layui-row">
+				<div id="top" class="layui-col-md12">
+					<div class="layui-row top-info">
+						<!-- 标题 -->
+						<div class="layui-col-md6 top-info2">
+							<p class="p-title">大学生校外实习实训管理系统</p>
+						</div>
+						<!-- 用户信息展示 -->
+						<div class="layui-col-md6  top-info2">
+							<div class="user-info">
+								<ul>
+									<li>
+										<a href="javascript:void(0)">
+											<span id="username"></span>
+											<i class="layui-icon layui-icon-down"></i>
+										</a>
+									</li>
+								</ul>
+								<div class="user-info-edit">
+									<ul>
+										<li>
+											<a href="javascript:void(0)" onclick="updatePwd()">修改密码</a>
+										</li>
+										<!-- <li>
+											<a href="javascript:void(0)" onclick="lookUserInfo()">个人信息</a>
+										</li> -->
+										<li>
+											<a href="javascript:void(0)" onclick="exit()">退出登录</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-row">
+				<!-- 左侧导航栏 -->
+				<div class="layui-col-md2 left-w">
+					<div class="left sidebar">
+						<ul class="sidebar-menu" id="sidebar-menu">
+							<li class="header header1">导航菜单</li>
+							<li class="treeview active">
+								<a href="#" class="a0">
+									<i class="fa fa-desktop"></i>
+									<span>我的学习</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1 menu-open" style="display: block;">
+									<li>
+										<a class="menuItem" href="javascript:void(0);" data-url="html/report.html">
+											<i class="fa fa-sitemap"></i>
+											<m>上传实训报告</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)" data-url="html/queryScore.html">
+											<i class="fa fa-sitemap"></i>
+											<m>成绩信息查询</m>
+										</a>
+									</li>
+									<li>
+										<a class="menuItem" href="javascript:void(0)" data-url="html/work.html">
+											<i class="fa fa-sitemap"></i>
+											<m>作业信息查询</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li class="treeview">
+								<a href="#">
+									<i class="fa fa-desktop"></i>
+									<span>流程审批</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1" style="display: none;">
+									<li>
+										<a class="menuItem" href="javascript:void(0)" data-url="html/leaveRecord.html">
+											<i class="fa fa-sitemap"></i>
+											<m>请/销假申请</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+
+							<li class="treeview">
+								<a href="#">
+									<i class="fa fa-desktop"></i>
+									<span>我的考勤</span>
+									<i class="fa fa-angle-left pull-right"></i>
+								</a>
+								<ul class="treeview-menu treeview-menu1" style="display: none;">
+									<li>
+										<a class="menuItem" href="javascript:void(0)" data-url="html/attendance.html">
+											<i class="fa fa-sitemap"></i>
+											<m>考勤信息查询</m>
+										</a>
+									</li>
+								</ul>
+								<ul class="treeview-menu treeview-menu1" style="display: none;">
+									<li>
+										<a class="menuItem" href="javascript:void(0)" data-url="html/warning.html">
+											<i class="fa fa-sitemap"></i>
+											<m>预警信息查询</m>
+										</a>
+									</li>
+								</ul>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<!-- 右侧iframe -->
+				<div class="layui-col-md10 iframe-w">
+					<iframe name="iframe" class="iframe" frameborder="0" src="html/report.html"></iframe>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../lib/jquery/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../lib/layui/layui.js"></script>
+		<script src="../config.js"></script>
+		<script src="js/index.js"></script>
+		<script>
+			var layer, index;
+			$(function() {
+				layui.use('layer', function() {
+					layer = layui.layer;
+				})
+				$("a[name='btn']").click(function() {
+					$("#myFrame").attr("src", $(this).attr("value"))
+				})
+			})
+			//修改密码
+			function updatePwd() {
+				index = layer.open({
+					type: 2,
+					btn: false,
+					area: ['380px', '230px'],
+					title: ['修改密码', '15px'],
+					content: 'html/updatePwd.html'
+				})
+			}
+		</script>
+	</body>
+</html>

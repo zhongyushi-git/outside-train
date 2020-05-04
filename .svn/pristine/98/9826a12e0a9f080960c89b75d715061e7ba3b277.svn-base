@@ -1,0 +1,234 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+var date1;
+var status_arr = ['待审核', '已通过', '未通过','-'];
+var index1,data;
+$(function() {
+	layui.use(['layer', 'laydate', 'table', 'form'], function() {
+		layer = layui.layer,
+			laydate = layui.laydate,
+			table = layui.table,
+			form = layui.form;
+
+		laydate.render({
+			elem: '#leave_time',
+			trigger: 'click',
+		});
+		//赋当日日期
+		$("#leave_time").val(dateFormat('YYYY-mm-dd', new Date()));
+
+		initTable();
+		toolbarListen();
+
+		//当单击表格行时,把单选按钮设为选中状态
+		$(document).on("click", ".layui-table-body table.layui-table tbody tr", function() {
+			var obj = event ? event.target : event.srcElement;
+			var tag = obj.tagName;
+			var checkbox = $(this).find("td div.laytable-cell-radio div.layui-form-radio I");
+			if (checkbox.length != 0) {
+				if (tag == 'DIV') {
+					checkbox.click();
+				}
+			}
+		});
+		$(document).on("click", "td div.laytable-cell-radio div.layui-form-radio", function(e) {
+			e.stopPropagation();
+		});
+		//监听单击行事件
+		var click=1;
+		table.on('row(table)', function(obj) {
+			data= obj.data
+			if (click == 1) {
+				click = 2;
+			} else {
+				click = 1;
+			}
+		})
+
+	})
+
+	//监听搜索
+	$("#search").click(function() {
+		reloadTable()
+	});
+	$("#leaveBtn").click(function() {
+		index1 = layer.open({
+			type: 2,
+			btn: false,
+			area: ['550px', '450px'],
+			title: ['请假申请', '15px'],
+			content: 'leave.html'
+		})
+	});
+	$("#backLeaveBtn").click(function() {
+		if (data == null) {
+			layer.msg('请选择一行数据');
+			return;
+		}else{
+			if(data.leave_status!=1){
+				layer.msg('此假条需经辅导员审核后才能销假');
+				return;
+			}else if(new Date(data.end_time)<new Date()){
+				//比较销假时间与请假结束时间
+				layer.msg('此假条销假时间已过, 无法销假');
+				return;
+			} 
+			else{
+				layer.prompt({
+					formType: 2,
+					title: '填写销假原因',
+					area: ['260px', '100px'] //自定义文本域宽高
+				}, function(value, index, elem) {
+					//输入内容为空时无法提交
+					backLeave(data.leave_id,value,index)
+				});
+			}
+		} 
+		
+	});
+
+})
+//初始化表格
+function initTable() {
+	var json = getValue();
+	table.render({
+		elem: '#table',
+		url: WebAPI.instructor + 'leave/leaveList?leave_time=' + json.leave_time + '&leave_status=' + json.leave_status +
+			'&sno=' + json.sno+'&backLeave_status='+json.backLeave_status,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[{
+					type: 'radio',
+				},
+				{
+					field: 'leave_id',
+					title: 'ID',
+					hide: true
+				},
+				{
+					field: 'leave_time',
+					title: '申请时间',
+					unresize: true,
+					align: 'center'
+				},
+				{
+					field: 'start_time',
+					title: '请假时间',
+					unresize: true,
+					align: 'center',
+					width: 400,
+					templet: function(d) {
+						if (d.start_time != null && d.end_time != null) {
+							d.leave_time = d.start_time + ' 至 ' + d.end_time;
+						}
+						return d.leave_time;
+					}
+				},
+				{
+					field: 'leave_status',
+					title: '请假审核状态',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						return status_arr[d.leave_status]
+					}
+				},
+				{
+					field: 'backLeave_status',
+					title: '销假审核状态',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						return status_arr[d.backLeave_status]
+					}
+				},
+				{
+					fixed: 'right',
+					title: '操作',
+					toolbar: '#oper-col',
+					align: 'center'
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	data=null;
+	var json = getValue();
+	table.reload('tableReload', {
+		url: WebAPI.instructor + 'leave/leaveList?leave_time=' + json.leave_time + '&leave_status=' + json.leave_status +
+			'&sno=' + json.sno+'&backLeave_status='+json.backLeave_status,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'detail') {
+			layer.open({
+				type: 2,
+				btn: false,
+				area: ['620px', '620px'],
+				title: ['请假详情', '15px'],
+				content: 'leaveDetail.html?id=' + data.leave_id
+			})
+		}else if (layEvent === 'cancel') {
+			if(data.leave_status!=0){
+				layer.msg('此假条已审核, 无法撤销! 您可以选择销假');
+				return;
+			} else{
+				deleteBackLeave(data.leave_id);
+			}
+		}
+	})
+}
+//获取文本框的值
+function getValue() {
+	var json = {};
+	json.sno = '10210416301'
+	json.leave_time = $("input[name='leave_time']").val();
+	json.leave_status = $("select[name='leave_status']").val();
+	json.backLeave_status = $("select[name='backLeave_status']").val();
+	return json;
+}
+//销假申请
+function backLeave(id,value,index){
+	$.get(WebAPI.instructor+'leave/backLeave',{
+		leave_id:id,
+		backLeave_reason:value,
+	},function(data){
+		if(data.code==200){
+			layer.alert('销假成功',function(i){
+				layer.close(index);
+				layer.close(i);
+				reloadTable();
+			})
+		}else{
+			layer.msg(data.msg)
+		}
+	})
+}
+//撤销请假
+function deleteBackLeave(id){
+	$.ajax({
+		url:WebAPI.instructor+'leave/deleteBackLeave/'+id,
+		type:'delete',
+		success:function(data){
+			if(data.code==200){
+				layer.msg("撤销传成功");
+				reloadTable();
+			}else{
+				layer.msg(data.msg)
+			}
+		},error:function(err){
+			console.log(err)
+		}
+	})
+}

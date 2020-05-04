@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>基页面</title>
+		<link rel="stylesheet" href="layui/css/layui.css" />
+		<script src="jquery-3.2.1.min.js"></script>
+		<script src="layui/layui.js"></script>
+	</head>
+	<body>
+	</body>
+	<script>
+		layui.use('layer',function(){
+			var layer=layui.layer;
+			layer.open({
+				type: 2,
+				btn: false,
+				area:['280px','280px'],
+				title:['添加考勤信息','15px'],
+				content: 'addAttend.html'
+			})
+		})
+	</script>
+</html>

@@ -1,0 +1,179 @@
+var layer, laydate, table, form;
+var time, attend_id;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function () {
+    layui.use(['layer', 'laydate', 'table', 'form'], function () {
+        layer = layui.layer,
+            laydate = layui.laydate,
+            table = layui.table,
+            form = layui.form;
+
+        laydate.render({
+            elem: '#time',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#time2',
+            type: 'datetime'
+        });
+        $("#time").val(dateFormat('YYYY-mm-dd HH:MM:SS', new Date()))
+        $("#time2").val(dateFormat('YYYY-mm-dd HH:MM:SS', new Date(preDate(1, 7))))
+
+        getTermList();
+        getClassList();
+        inintTable();
+
+        $("#clear").click(function () {
+            $("input[name='name']").val('');
+            $("input[name='username']").val('');
+        })
+
+        $("#term_id").change(function () {
+            getPlanList();
+        })
+
+    })
+
+    $("#search").click(function () {
+        reloadTable()
+    });
+
+})
+
+//初始化表格
+function inintTable() {
+    var json = getValue();
+    table.render({
+        elem: '#table',
+        url: WebAPI.engineer + 'attend/tableAnalysisByAdmin?term_id=' + json.term_id + '&times=' + json.times + '&username=' +
+            json.username + '&class_id=' + json.classes + '&name=' + json.name,
+        page: true,
+        id: 'tableReload',
+        height: 'full-235',
+        cols: [
+            [
+                {field: 'time', title: 'time', hide: true},
+                {
+                    field: 'time',
+                    title: '日期',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'username',
+                    title: '学号',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'name',
+                    title: '姓名',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'classes',
+                    title: '班级',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'attend_addr',
+                    title: '地点',
+                    unresize: true,
+                    align: 'center'
+                },
+                {
+                    field: 'count',
+                    title: '考勤次数',
+                    unresize: true,
+                    align: 'center',
+                },
+            ]
+        ],
+    })
+}
+
+//搜索时重载表格
+function reloadTable() {
+    var json = getValue();
+    table.reload('tableReload', {
+        url: WebAPI.engineer + 'attend/tableAnalysisByAdmin?term_id=' + json.term_id + '&times=' + json.times + '&username=' +
+            json.username + '&class_id=' + json.classes + '&name=' + json.name,
+        page: {
+            curr: 1, //设置当前页面为第一页
+        },
+    }, 'data')
+}
+
+function getValue() {
+    var json = {};
+    json.term_id = $("#id").val();
+    json.name = $("input[name='name']").val();
+    json.classes = $("select[name='classes']").val();
+    json.username = $("input[name='username']").val();
+    json.times = $("#time2").val() + ',' + $("#time").val();
+    return json;
+}
+
+//获取班级信息
+function getClassList() {
+    $.ajax({
+        url: WebAPI.manage + 'class/getClassList',
+        async: false,
+        success: function (data) {
+            $("#classes").html('');
+            var select = '';
+            for (var i = 0; i < data.length; i++) {
+                select += '<option value="' + data[i].class_id + '">' + data[i].class_name + '</option>';
+            }
+            $("#classes").append(select);
+        },
+        error: function () {
+            layer.alert("查询班级信息发生错误");
+        }
+    })
+}
+
+//获取学期信息
+function getTermList() {
+    $.ajax({
+        url: WebAPI.manage + 'term/getTermList',
+        async: false,
+        success: function (data) {
+            $("#term_id").html('');
+            var select = '';
+            for (var i = 0; i < data.length; i++) {
+                select += '<option value="' + data[i].term_id + '">' + data[i].term + '</option>';
+            }
+            $("#term_id").append(select);
+        },
+        error: function () {
+            layer.alert("查询学期信息发生错误");
+        }
+    })
+    getPlanList()
+}
+
+//获取实训计划信息
+function getPlanList() {
+    var term_id = $("#term_id").val();
+    if (term_id == null || term_id == '') return;
+    $.ajax({
+        url: WebAPI.teacher + 'trainPlan/getPlanList?term_id=' + term_id,
+        async: false,
+        success: function (data) {
+            $("#id").html('');
+            var select = '';
+            for (var i = 0; i < data.length; i++) {
+                select += '<option value="' + data[i].id + '">' + data[i].train_name + '</option>';
+            }
+            $("#id").append(select);
+        },
+        error: function () {
+            layer.alert("查询学期信息发生错误");
+        }
+    })
+}
+

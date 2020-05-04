@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>请假详情</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css" />
+		<script src="../../jquery-3.2.1.min.js"></script>
+		<script src="../../layui/layui.js"></script>
+		<style>
+			body{
+				margin: 10px;
+			}
+			.layui-input{
+				height: 30px;
+				width: 80%;
+			}
+			table{border-collapse:separate; border-spacing:0px 10px;}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td width="100px">请假人</td>
+				<td width="200px">
+					<input type="text" class="layui-input" name="name">
+				</td>
+				<td width="100px">学号</td>
+				<td width="200px">
+					<input type="text" class="layui-input" name="sno">
+				</td>
+			</tr>
+			<tr>
+				<td>申请时间</td>
+				<td>
+					<input type="text" class="layui-input" name="leave_time">
+				</td>
+				<td>销假时间</td>
+				<td>
+					<input type="text" class="layui-input" name="backLeave_time">
+				</td>
+			</tr>
+			<tr>
+				<td>请假审核状态</td>
+				<td>
+					<input type="text" class="layui-input" name="leave_status">
+				</td>
+				<td>销假审核状态</td>
+				<td>
+					<input type="text" class="layui-input" name="backLeave_status">
+				</td>
+			</tr>
+			<tr>
+				<td>请假开始时间</td>
+				<td>
+					<input type="text" class="layui-input" name="start_time">
+				</td>
+				<td>请假结束时间</td>
+				<td>
+					<input type="text" class="layui-input" name="end_time">
+				</td>
+			</tr>
+			<tr>
+				<td>请假原因</td>
+				<td colspan="3">
+					<textarea name="leave_reason" rows="10" cols="60"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>备注</td>
+				<td colspan="3">
+					<textarea name="leave_remark" rows="5" cols="60"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>销假原因</td>
+				<td colspan="3">
+					<textarea name="backLeave_reason" rows="5" cols="60"></textarea>
+				</td>
+			</tr>
+		</table>
+	</body>
+	<script src="../../config.js"></script>
+	<script>
+		$(function() {
+			var status_arr = ['待审核', '已通过', '未通过', '-'];
+			var leave_id = window.location.href.split("?id=")[1];
+			$.get(WebAPI.instructor + "leave/getOneLeaveById/" + leave_id, function(data) {
+				for (var p in data) { //遍历json对象的每个key/value对,p为key
+					if (p.indexOf("status") != -1) {
+						data[p] = status_arr[data[p]];
+					}
+					$("input[name='" + p + "']").val(data[p]);
+					$("textarea[name='" + p + "']").val(data[p]);
+				}
+			})
+		})
+	</script>
+</html>

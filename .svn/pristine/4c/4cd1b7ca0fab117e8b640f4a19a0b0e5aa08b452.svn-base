@@ -1,0 +1,93 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function() {
+	layui.use(['layer', 'laydate', 'table', 'form'], function() {
+		layer = layui.layer,
+			laydate = layui.laydate,
+			table = layui.table,
+			form = layui.form;
+
+
+		laydate.render({
+			elem: '#applyTime',
+		});
+
+		var WebAPI = {};
+		WebAPI.student = ""
+
+		table.render({
+			elem: '#table',
+			url: WebAPI.student + 'process/leave',
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[{
+						field: 'Id',
+						title: 'ID',
+						hide: true
+					},
+					{
+						field: 'applyTime',
+						title: '申请时间',
+						unresize: true,
+						width: 150,
+						align: 'center'
+					},
+					{
+						field: 'leaveTimes',
+						title: '请假时间',
+						unresize: true,
+						align: 'center'
+					},
+					{
+						field: 'leave_status',
+						title: '审核状态',
+						unresize: true,
+						width: 150,
+						align: 'center'
+					},
+					{
+						fixed: 'right',
+						title: '操作',
+						toolbar: '#oper-col',
+						width: 80,
+						align: 'center'
+					}
+				]
+			],
+		})
+
+	})
+
+	$("#search").click(function() {
+		reloadTable()
+	});
+
+})
+
+//搜索时重载表格
+function reloadTable() {
+	var applyTime = $("input[name='applyTime']").val();
+	var leave_status = $("select[name='leave_status']").val();
+	//表格重载
+	table.reload('tableReload', {
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+		where: {
+			applyTime: applyTime,
+			leave_status: leave_status
+		}
+	}, 'data')
+}
+//监听工具条
+function toolbarListen() {
+	table.on('tool(table)', function(obj) {
+		var data = obj.data;
+		var layEvent = obj.event;
+		if (layEvent === 'detail') {
+
+		}
+	})
+}

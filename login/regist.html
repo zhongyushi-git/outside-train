@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>注册</title>
+    <link rel="stylesheet" href="../layui/css/layui.css"/>
+    <script src="../jquery-3.2.1.min.js"></script>
+    <script src="../layui/layui.js"></script>
+    <style>
+		body{
+			background:  #F2F0d0
+		}
+        #regist {
+            width: 300px;
+            height: 400px;
+            background: rgba(171, 198, 255, 191);
+            color: #ffffff;
+            position: absolute;
+            z-index: 999;
+            left: 40%;
+            top: 150px;
+            /* display: none; */
+        }
+
+        #title {
+            font-size: 18px;
+            font-family: "arial, helvetica, sans-serif";
+            margin-left: 10px;
+        }
+
+        .line {
+            width: 280px;
+            margin: 10px;
+            height: 2px;
+            background: rgba(205, 255, 190, 191);
+        }
+
+        #content {
+            margin: 10px;
+            margin-left: 20px;
+        }
+
+        img {
+            width: 25px;
+            height: 25px;
+        }
+
+        #submitBtn {
+            width: 250px;
+            border-radius: 20px 20px 20px 20px;
+        }
+
+        #foot a {
+            margin-left: 20px;
+            color: floralwhite;
+        }
+
+        #close {
+            z-index: 999;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        #close img {
+            width: 15px;
+            height: 15px;
+        }
+
+        .layui-form-pane .layui-form-label {
+            background: none;
+            width: 60px;
+            border-radius: 20px 0 0 20px;
+            border-style: solid none solid solid;
+        }
+
+        .layui-form-pane .layui-input {
+            border-radius: 0 20px 20px 0;
+        }
+
+        .layui-input {
+            background: rgba(171, 198, 255, 191);
+            border-style: solid solid solid none;
+        }
+
+    </style>
+</head>
+<body>
+<!-- <button id="reg">点我注册</button> -->
+<div id="regist">
+    <br>
+    <span id="title">企业工程师注册</span>
+    <div class="line"></div>
+    <div id="content">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <img src="../img/phone.png"/>
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="phone" lay-verify="required|phone" placeholder="请输入手机号码" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <img src="../img/name.png"/>
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="required" placeholder="请输入姓名" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <img src="../img/passwd.png"/>
+                </label>
+                <div class="layui-input-inline">
+                    <input type="password" name="password" lay-verify="required|password" placeholder="请输入密码"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <img src="../img/sex.png"/>
+                </label>
+                <div class="layui-input-inline">
+                    <input type="radio" name="sex" value="0" title="男" checked="">
+                    <input type="radio" name="sex" value="1" title="女">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">
+                    <img src="../img/email.png"/>
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="email" lay-verify="required|email" placeholder="请输入邮箱" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <button class="layui-btn layui-btn-normal" type="submit" id="submitBtn" lay-submit=""
+                    lay-filter="submitBtn">注册
+            </button>
+        </form>
+    </div>
+    <div id="foot">
+        <!-- <a href="javascript:void(0)" id="close" title="关闭"><img src="../img/close.png"/></a> -->
+        <a href="login.html"  title="返回到登录页面">返回登录</a>
+    </div>
+</div>
+</body>
+<script src="../config.js"></script>
+<script src="../tool.js"></script>
+<script src="js/regist.js"></script>
+
+</html>

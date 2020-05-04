@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>下载实训报告</title>
+		<link rel="stylesheet" href="../layui/css/layui.css" />
+		<script src="../jquery-3.2.1.min.js"></script>
+		<script src="../layui/layui.js"></script>
+		<!-- 操作列 -->
+		<script type="text/html" id="oper-col">
+			<a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="download">下载</a>
+			<a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="addReportSocre">填写成绩</a>
+		</script>
+		<style>
+			.layui-input{
+				height: 30px;
+			}
+			.right{
+				float: right;
+				 line-height:35px
+			}
+			body{
+				margin:10px
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 搜索栏 -->
+		<div>
+			搜索栏
+		</div>
+		<div>
+			<table id="table" lay-filter="table"></table>
+		</div>
+	</body>
+	<script src="downloadReport.js"></script>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>select</title>
+		<link rel="stylesheet" href="layui/css/layui.css" />
+		<script src="jquery-3.2.1.min.js"></script>
+		<script src="layui/layui.js"></script>
+	</head>
+	<body>
+			<div class="layui-form" lay-filter="jhbh">
+				<select class="layui-input" name="jhbh" id="jhbh"></select>
+			</div>
+	</body>
+	<script src="select2/js/select2.min.js"></script>
+	<script src="select.js"></script>
+</html>

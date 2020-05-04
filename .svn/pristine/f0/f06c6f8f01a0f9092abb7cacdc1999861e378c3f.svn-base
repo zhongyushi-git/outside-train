@@ -1,0 +1,22 @@
+$(function(){
+	layui.use('form', function() {
+		var form = layui.form;
+		$.ajax({
+			url:'data.json',
+			async: false,
+			success:function(data){
+				
+				$("#jhbh").html('<option value="请选择">请选择</option>');
+				var select='';
+				for(var i=0;i<data.length;i++){
+					select+='<option value="'+data[i]+'">'+data[i]+'</option>';
+				}
+				$("#jhbh").append(select);	
+				console.log($("#jhbh").html())
+			},
+			error:function () {
+				layer.alert("查询计划编号发生错误");
+			}
+		})
+	})
+})

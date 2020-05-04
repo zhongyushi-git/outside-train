@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>发布作业</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css"/>
+    <script src="../../jquery-3.2.1.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <style>
+        .layui-input {
+            height: 30px;
+        }
+
+        .right {
+            float: right;
+        }
+
+        body {
+            margin: 10px
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0px 15px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <table>
+        <tr>
+            <td width="100px">
+                <div class="right">作业题目：</div>
+            </td>
+            <td>
+                <textarea class="layui-textarea" name="question" rows="8" disabled="disabled"></textarea>
+            </td>
+        </tr>
+		<tr>
+		    <td width="100px">
+		        <div class="right">答题区域：</div>
+		    </td>
+		    <td>
+		        <textarea class="layui-textarea" name="answer" rows="8" cols="100"></textarea>
+		    </td>
+		</tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" id="save">确定</button>
+                <button class="layui-btn layui-btn-primary layui-btn-sm" id="close">取消</button>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+<script src="../../config.js"></script>
+<script>
+    var layer, laydate, form;
+	var parentData=window.parent.parentData
+    $(function () {
+        layui.use(['layer', 'form'], function () {
+            layer = layui.layer;
+            form = layui.form;
+
+			$("textarea[name='question']").val(parentData.question)
+
+            $("#save").click(function () {
+                save();
+            })
+            $("#close").click(function () {
+                parent.layer.close(window.parent.index1);
+            })
+        });
+    })
+   
+
+    //保存
+    function save() {
+        var json = {};
+		json.q_id=parentData.q_id;
+		json.username=parentData.username;
+		json.answers=$("textarea[name='answer']").val();
+		if(json.answers==null || json.answers.trim().length==0){
+			layer.alert("请输入答案");
+			return;
+		}
+        if (!json) return;
+        $.ajax({
+            url: WebAPI.teacher + "work/update",
+            type: 'post',
+            data: JSON.stringify(json),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.code == 200) {
+                    layer.alert("添加成功", function (i) {
+                        //关闭父级弹框
+                        parent.layer.close(window.parent.index1);
+                        layer.close(i)
+                        window.parent.reloadTable()
+                    });
+
+                } else {
+                    layer.alert(data.msg);
+                }
+            }, error: function (err) {
+                console.log("发生错误" + err)
+            }
+        })
+    }
+</script>
+</html>

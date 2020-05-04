@@ -1,0 +1,111 @@
+var layer,laydate,table,form;
+var time,attend_id;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function(){
+	layui.use(['layer','laydate','table','form'],function(){
+		layer=layui.layer,
+		laydate=layui.laydate,
+		table=layui.table,
+		form=layui.form;
+		
+		laydate.render({
+			elem: '#time',
+		});
+		$("#time").val(dateFormat('YYYY-mm-dd',new Date()))
+		
+		inintTable();
+		
+		
+		$("#clear").click(function(){
+			$("#time").val(dateFormat('YYYY-mm-dd',new Date()))
+			$("input[name='name']").val('');
+			$("select[name='classes']").val('计算机1163');
+			$("input[name='sno']").val('');
+		})
+			
+		
+		
+	})
+	
+	$("#search").click(function(){
+		reloadTable()
+	});
+	
+})
+//初始化表格
+function inintTable(){
+	var json= getValue();
+	table.render({	
+		elem: '#table',
+		url: WebAPI.engineer + 'attend/queryByTea?time='+json.time+'&sno='+json.sno+'&classes='+json.classes+'&name='+json.name,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[
+				 { field: 'time', title: 'time', hide:true },
+				 {
+				 	field: 'time',
+				 	title: '日期',
+				 	unresize: true,
+				 	align:'center'
+				 },
+				{
+					field: 'sno',
+					title: '学号',
+					unresize: true,
+					align:'center'
+				},
+				{
+					field: 'name',
+					title: '姓名',
+					unresize: true,
+					align:'center'
+				},
+				{
+					field: 'classes',
+					title: '班级',
+					unresize: true,
+					align:'center'
+				},
+				{
+					field: 'attend_teacher',
+					title: '考勤老师',
+					unresize: true,
+					align:'center'
+				},
+				{
+					field: 'attend_addr',
+					title: '地点',
+					unresize: true,
+					align:'center'
+				},
+				{
+					field: 'count',
+					title: '考勤次数',
+					unresize: true,
+					align:'center',
+				},
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	var json= getValue();
+	table.reload('tableReload', {
+		url: WebAPI.engineer + 'attend/queryByTea?time='+json.time+'&sno='+json.sno+'&classes='+json.classes+'&name='+json.name,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+function getValue(){
+	var json={};
+	json.time=$("#time").val();
+	json.name = $("input[name='name']").val();
+	json.classes = $("select[name='classes']").val();
+	json.sno = $("input[name='sno']").val();
+	return json;
+}
+

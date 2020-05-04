@@ -1,0 +1,166 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+//记录选中的学号
+var data =null;
+var index;
+$(function() {
+	layui.use(['layer', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table,
+			form = layui.form;
+
+		var classes = $("select[name='classes']").val();
+		var sno = $("input[name='sno']").val();
+		var name = $("input[name='name']").val()
+		table.render({
+			elem: '#table',
+			url:WebAPI.student + 'score/queryReplyByTea?classes=' + classes + '&sno=' + sno + '&name=' + name,
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[{
+						type: 'radio'
+					},
+					{
+						field: 'sno',
+						title: '学号',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						field: 'name',
+						title: '姓名',
+						unresize: true,
+						align: 'center'
+					},
+					{
+						field: 'classes',
+						title: '班级',
+						unresize: true,
+						align: 'center',
+					},
+					{
+						field: 'reply_score',
+						title: '答辩成绩',
+						unresize: true,
+						align: 'center',
+						templet: function(d) {
+							if (d.reply_score == 0 || d.reply_score == null) {
+								d.reply_score = '-';
+							}
+							return d.reply_score
+						}
+					}
+				]
+			],
+		})
+		var click = 1;
+
+		//监听单击行事件
+		table.on('row(table)', function(obj) {
+			data= obj.data
+			if (click == 1) {
+				click = 2;
+			} else {
+				click = 1;
+			}
+
+		})
+		//当单击表格行时,把单选按钮设为选中状态
+		$(document).on("click", ".layui-table-body table.layui-table tbody tr", function() {
+			var obj = event ? event.target : event.srcElement;
+			var tag = obj.tagName;
+			var checkbox = $(this).find("td div.laytable-cell-radio div.layui-form-radio I");
+			if (checkbox.length != 0) {
+				if (tag == 'DIV') {
+					checkbox.click();
+				}
+			}
+		});
+		$(document).on("click", "td div.laytable-cell-radio div.layui-form-radio", function(e) {
+			e.stopPropagation();
+		});
+
+	})
+
+	//按钮的监听
+	$("#search").click(function() {
+		reloadTable(1)
+	});
+	$("#addReplySocre").click(function() {
+		if (data == null) {
+			layer.msg('请选择一行数据');
+			return;
+		}else if(data.reply_score!=0&&data.reply_score!=null){
+			layer.confirm("此学生已有成绩,确定修改吗？",{},
+			function(index, layero){
+				openPrompt(1)
+				}
+			);
+		}else{
+			openPrompt(0)
+		}
+		
+		
+	});
+	$("#addAttend").click(function() {
+		if (data == null) {
+			layer.msg('请选择一行数据');
+			return;
+		}
+		index=layer.open({
+			type: 2,
+			btn: false,
+			area: ['380px', '490px'],
+			title: ['添加考勤信息', '15px'],
+			content: 'addAttend.html'
+		})
+	});
+
+
+})
+
+//搜索时重载表格
+function reloadTable(curr) {
+	data=null;
+	table.reload('tableReload', {
+		page: {
+			curr: curr, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+function  openPrompt(v){
+	layer.prompt({
+		value: '',
+		title: '请输入答辩成绩',
+	}, function(value, index, elem) {
+		var re = /^\d+(?=\.{0,1}\d+$|$)/
+		if (!re.test(value)) {
+			layer.msg("请输入正确的数字");
+			return;
+		}else if(value>100||value<0){
+			layer.msg("分数在0-100之间");
+			return;
+		}
+		addReplyScore(data.sno, value, index,v)
+	});
+}
+//添加答辩成绩
+function addReplyScore(sno, score, index,v) {
+	$.get(WebAPI.student + "score/addReplyScore", {
+		reply_score: score,
+		sno: sno,
+		v:v
+	}, function(data) {
+		if (data.code == 200) {
+			layer.msg('保存成功');
+			setTimeout(function() {
+				layer.close(index);
+			}, 3000)
+			reloadTable(currPageNum)
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}

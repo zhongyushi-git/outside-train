@@ -1,0 +1,251 @@
+var layer, laydate, table, form;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+//记录选中的学号和实训成绩
+var arr = [],
+	data = [];
+$(function() {
+	layui.use(['layer', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table,
+			form = layui.form;
+		
+		inintTable();
+		
+		$("#clear").click(function() {
+			$("input[name='name']").val('');
+			$("input[name='sno']").val('');
+		})
+		
+		//监听复选框事件
+		table.on('checkbox(table)', function(obj) {
+			var d = obj.data;
+			if (obj.checked) {
+				arr.push(d.sno);
+				data.push(d)
+			} else {
+				for (var i = 0; i < arr.length; i++) {
+					if (d.sno === arr[i]) {
+						arr.splice(i, 1);
+						data.splice(i, 1);
+					}
+				}
+			}
+		});
+
+		// 当单击表格行时,把多选按钮设为选中状态
+		$(document).on("click", ".layui-table-body table.layui-table tbody tr", function() {
+			var obj = event ? event.target : event.srcElement;
+			var tag = obj.tagName;
+			var checkbox = $(this).find("td div.laytable-cell-checkbox div.layui-form-checkbox I");
+			if (checkbox.length != 0) {
+				if (tag == 'DIV') {
+					checkbox.click();
+				}
+			}
+		});
+		$(document).on("click", "td div.laytable-cell-checkbox div.layui-form-checkbox", function(e) {
+			e.stopPropagation();
+		});
+	})
+
+	//按钮的监听
+	$("#search").click(function() {
+		reloadTable()
+	});
+	$("#submitAllSocre").click(function() {
+		if (arr.length == 0) {
+			layer.msg('至少选择一行数据!');
+			return;
+		} else {
+			//判断是否可以进行提交总成绩(答辩或实训成绩是否为空)
+			//判断是否已经提交了总成绩
+			var array = [],
+				array2 = [];
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].reply_score == null || data[i].reply_score == '' || data[i].train_score == null || data[i].train_score ==
+					'') {
+					array.push(data[i].sno);
+				}
+				if (data[i].all_status == 1) {
+					array2.push(data[i].sno);
+				}
+			}
+			if (array.length > 0) {
+				layer.alert("学号为" + array + "的学生答辩或实训成绩为空,无法提交总成绩");
+				return;
+			}
+			if (array2.length > 0) {
+				layer.alert("学号为" + array2 + "的学生已提交总成绩,不能重复提交");
+				return;
+			}
+			layer.confirm("确定提交综合成绩吗？", {},
+				//只有提交了总成绩才能显示总成绩
+				function(index, layero) {
+					submitAllSocre(arr)
+				}
+			);
+		}
+
+	});
+	$("#addTrainSocre").click(function() {
+		if (arr.length == 0) {
+			layer.msg('请先选择一行数据!');
+			return;
+		} else if (arr.length > 1) {
+			layer.msg('只能选择一行数据!');
+			return;
+		} else if (data[0].all_status == 1) {
+			layer.msg('该学生总成绩已提交,无法修改');
+			return;
+		} else if (data[0].train_score != 0 && data[0].train_score != null) {
+			layer.confirm("此学生已有成绩,确定修改吗？", {},
+				function(index, layero) {
+					openPrompt()
+				}
+			);
+		} else {
+			openPrompt()
+		}
+	});
+})
+//初始化表格
+function inintTable() {
+	var json = getValue();
+	table.render({
+		elem: '#table',
+		url: WebAPI.student + 'score/queryReplyByTea?term_id=' + json.term_id + '&classes=' + json.classes + '&sno=' + 
+			json.sno + '&name=' + json.name,
+		page: true,
+		id: 'tableReload',
+		cols: [
+			[{
+					type: 'checkbox'
+				},
+				{
+					field: 'sno',
+					title: '学号',
+					unresize: true,
+					align: 'center',
+					hide: true
+				},
+				{
+					field: 'name',
+					title: '姓名',
+					unresize: true,
+					align: 'center'
+				},
+				{
+					field: 'classes',
+					title: '班级',
+					unresize: true,
+					align: 'center',
+				},
+				{
+					field: 'reply_score',
+					title: '答辩成绩',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						if (d.reply_score == 0 || d.reply_score == null) {
+							d.reply_score = '-';
+						}
+						return d.reply_score
+					}
+				},
+				{
+					field: 'train_score',
+					title: '实训成绩',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						if (d.train_score == 0 || d.train_score == null) {
+							d.train_score = '-';
+						}
+						return d.train_score
+					}
+				},
+				{
+					field: 'all_score',
+					title: '综合成绩',
+					unresize: true,
+					align: 'center',
+					templet: function(d) {
+						if (d.all_score == 0 || d.all_score == null || d.all_status == 0) {
+							d.all_score = '-';
+						}
+						return d.all_score
+					}
+				}
+			]
+		],
+	})
+}
+//搜索时重载表格
+function reloadTable() {
+	data = [];
+	var json=getValue();
+	table.reload('tableReload', {
+		url: WebAPI.student + 'score/queryReplyByTea?term_id=' + json.term_id + '&classes=' + json.classes + '&sno=' +
+			json.sno + '&name=' + json.name,
+		page: {
+			curr: 1, //设置当前页面为第一页
+		},
+	}, 'data')
+}
+//添加答辩成绩
+function submitAllSocre(arr) {
+	$.get(WebAPI.student + "score/submitAllScore", {
+		arrStr: JSON.stringify(arr)
+	}, function(data) {
+		if (data.code == 200) {
+			layer.msg('提交成功');
+			reloadTable(currPageNum)
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}
+//打开输入弹框
+function openPrompt(v) {
+	layer.prompt({
+		value: '',
+		title: '请输入实训成绩',
+	}, function(value, index, elem) {
+		var re = /^\d+(?=\.{0,1}\d+$|$)/
+		if (!re.test(value)) {
+			layer.msg("请输入正确的数字");
+			return;
+		} else if (value > 100 || value < 0) {
+			layer.msg("分数在0-100之间");
+			return;
+		}
+		addTrainScore(value, index)
+	});
+}
+//添加实训成绩
+function addTrainScore(score, index) {
+	$.get(WebAPI.student + "score/addTrainScore", {
+		train_score: score,
+		sno: arr[0],
+	}, function(data) {
+		if (data.code == 200) {
+			layer.alert('保存成功', function(i) {
+				layer.close(index);
+				layer.close(i)
+				reloadTable(currPageNum)
+			});
+		} else {
+			layer.msg(data.msg)
+		}
+	})
+}
+//获取输入的值
+function getValue() {
+	var json = {};
+	json.term_id = $("select[name='term_id']").val();
+	json.classes = $("select[name='classes']").val();
+	json.sno = $("input[name='sno']").val();
+	json.name = $("input[name='name']").val();
+	return json;
+}

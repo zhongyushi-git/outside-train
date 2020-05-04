@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>考勤信息</title>
+		<link rel="stylesheet" href="../layui/css/layui.css" />
+		<script src="../jquery-3.2.1.min.js"></script>
+		<script src="../layui/layui.js"></script>
+		<style>
+			.layui-input{
+				height: 30px;
+			}
+			.right{
+				float: right;
+				 line-height:35px
+			}
+			body{
+				margin:10px
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<!-- 搜索栏 -->
+			<div class="layui-row">
+				<div class="layui-col-md4">
+					<div class="right">日期（月份）：</div>
+				</div>
+				<div class="layui-col-md2">
+					<input type="text" class="layui-input" name="date1" id="date1">
+				</div>
+				<div class="2">
+					<button class="layui-btn layui-btn-sm layui-btn-normal" id="search">查询</button>
+				</div>
+			</div>
+			<!-- 表格栏 -->
+			<div>
+				<table id="table" lay-filter="table"></table>
+			</div>
+		</div>
+	</body>
+	<script src="attendance.js"></script>
+</html>

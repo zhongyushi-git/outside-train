@@ -1,0 +1,93 @@
+var layer, table;
+//获取当前页码
+var currPageNum = $(".layui-laypage-em").next().html();
+$(function() {
+	layui.use(['layer', 'laydate', 'table', 'form'], function() {
+		layer = layui.layer,
+			table = layui.table;
+
+
+
+		var WebAPI = {};
+		WebAPI.student = ""
+
+		table.render({
+			elem: '#table',
+			toolbar: '#toolbarDemo',
+			defaultToolbar: ['filter'],
+			url: WebAPI.student + 'process/leaveList?flag=1',
+			page: true,
+			id: 'tableReload',
+			cols: [
+				[{
+						type: 'radio',
+					},
+					{
+						field: 'Id',
+						title: 'ID',
+						hide: true
+					}, {
+						field: 'applyTime',
+						title: '申请时间',
+						unresize: true,
+						width: 150,
+						align: 'center'
+					},
+					{
+						field: 'leaveTimes',
+						title: '请假时间',
+						unresize: true,
+						align: 'center'
+					},
+					{
+						field: 'reason',
+						title: '请假原因',
+						unresize: true,
+						align: 'center'
+					},
+					{
+						field: 'remark',
+						title: '备注',
+						unresize: true,
+						align: 'center'
+					},
+				]
+			],
+		})
+
+		//头工具栏事件
+		table.on('toolbar(table)', function(obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			if (obj.event === 'backLeaveBtn') {
+				var data = checkStatus.data;
+				if (data.length != 1) {
+					layer.msg("请先选择一行");
+					return;
+				}
+
+				layer.alert(JSON.stringify(data));
+				// layer.prompt({
+				// 	formType: 2,
+				// 	title: '填写销假原因',
+				// 	area: ['260px', '100px'] //自定义文本域宽高
+				// }, function(value, index, elem) {
+				// 	//输入内容为空时无法提交
+				// 	alert(value); //得到value
+				// backTime=value参数
+				// 	layer.close(index);
+				// });
+			}
+		})
+	})
+
+})
+
+//搜索时重载表格
+function reloadTable(pageNum) {
+	//表格重载
+	table.reload('tableReload', {
+		page: {
+			curr: pageNum, //设置当前页面为第一页
+		},
+	}, 'data')
+}

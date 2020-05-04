@@ -1,0 +1,91 @@
+var parentData = window.parent.parentData;
+var layer;
+$(function () {
+    layui.use(['layer'], function () {
+        layer = layui.layer;
+
+    });
+
+    inintData();
+
+    $("#cancel").click(function () {
+        parent.layer.close(window.parent.index)
+    })
+    $("#save").click(function () {
+        saveInfo();
+    })
+
+
+})
+
+function inintData() {
+    for (var p in parentData) { //遍历json对象的每个key/value对,p为key
+        $("input[name='" + p + "']").val(parentData[p]);
+    }
+}
+
+//验证输入的合法性
+function checkInput() {
+    var json = {};
+    json.id = $("input[name='id']").val();
+    json.train_count = $("input[name='train_count']").val();
+    json.train_count2 = $("input[name='train_count2']").val();
+    json.work_count = $("input[name='work_count']").val();
+    json.work_count2 = $("input[name='work_count2']").val();
+    if (json.train_count == null || json.train_count == '') {
+        layer.msg("应考勤次数不能为空")
+        return;
+    } else if (!checkInteger(json.train_count)) {
+        layer.msg("应考勤次数只能为整数")
+        return;
+    } else if (json.train_count2 == null || json.train_count2 == '') {
+        layer.msg("考勤预警次数不能为空")
+        return;
+    } else if (!checkInteger(json.train_count2)) {
+        layer.msg("考勤预警次数只能为整数")
+        return;
+    } else if (Number(json.train_count) < Number(json.train_count2)) {
+        layer.msg("考勤预警次数不能大于应考勤次数")
+        return;
+    } else if (json.work_count == null || json.work_count == '') {
+        layer.msg("作业应交次数不能为空")
+        return;
+    } else if (!checkInteger(json.work_count)) {
+        layer.msg("作业应交次数只能为整数")
+        return;
+    } else if (json.work_count2 == null || json.work_count2 == '') {
+        layer.msg("作业预警次数不能为空")
+        return;
+    } else if (!checkInteger(json.work_count2)) {
+        layer.msg("作业预警次数只能为整数")
+        return;
+    } else if (Number(json.work_count) < Number(json.work_count2)) {
+        layer.msg("作业预警次数不能大于作业应交次数")
+        return;
+    }
+    return json;
+}
+
+//保存数据
+function saveInfo() {
+    var json = checkInput();
+    if (!json) {
+        return;
+    }
+    $.get(WebAPI.teacher + 'trainPlan/updateCount', {
+        id: json.id,
+        train_count: json.train_count,
+        train_count2: json.train_count2,
+        work_count: json.work_count,
+        work_count2: json.work_count2
+    }, function (data) {
+        if (data.code == 200) {
+            layer.alert("修改成功", function () {
+                parent.layer.close(window.parent.index)
+                window.parent.reloadTable();
+            });
+        } else {
+            layer.alert(data.msg)
+        }
+    })
+}
